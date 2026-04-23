@@ -3,19 +3,20 @@
 This guide provides step-by-step instructions to implement comprehensive Android product flavors with all advanced features.
 
 ## Table of Contents
-1. [Directory Structure](#directory-structure)
-2. [Basic Setup](#basic-setup)
-3. [Flavor Configuration](#flavor-configuration)
-4. [Feature Flags](#feature-flags)
-5. [Flavor-Specific Code](#flavor-specific-code)
-6. [Flavor-Specific Resources](#flavor-specific-resources)
-7. [Flavor-Specific Permissions](#flavor-specific-permissions)
-8. [Flavor-Specific Dependencies](#flavor-specific-dependencies)
-9. [ProGuard Rules](#proguard-rules)
-10. [Signing Configuration](#signing-configuration)
-11. [Building and Testing](#building-and-testing)
-12. [Common Issues and Solutions](#common-issues-and-solutions)
-13. [Testing Checklist](#testing-checklist)
+1. [Use Cases](#use-cases)
+2. [Directory Structure](#directory-structure)
+3. [Basic Setup](#basic-setup)
+4. [Flavor Configuration](#flavor-configuration)
+5. [Feature Flags](#feature-flags)
+6. [Flavor-Specific Code](#flavor-specific-code)
+7. [Flavor-Specific Resources](#flavor-specific-resources)
+8. [Flavor-Specific Permissions](#flavor-specific-permissions)
+9. [Flavor-Specific Dependencies](#flavor-specific-dependencies)
+10. [ProGuard Rules](#proguard-rules)
+11. [Signing Configuration](#signing-configuration)
+12. [Building and Testing](#building-and-testing)
+13. [Common Issues and Solutions](#common-issues-and-solutions)
+14. [Testing Checklist](#testing-checklist)
 
 ---
 
