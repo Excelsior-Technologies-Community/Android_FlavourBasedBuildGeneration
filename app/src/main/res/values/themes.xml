@@ -1,8 +1,24 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.FlavourBasedBuildTest" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Base application theme - Light only -->
+    <style name="Base.Theme.FlavourBasedBuildTest" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Customize your light theme here. -->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/white</item>
+        <item name="colorTertiary">@color/accent</item>
+        <item name="colorOnTertiary">@color/white</item>
+        <item name="colorError">@color/error</item>
+        <item name="colorOnError">@color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:forceDarkAllowed">false</item>
         <item name="colorAccent">@color/accent</item>
         <item name="android:colorBackground">@color/background</item>
         <item name="android:windowBackground">@color/background</item>
@@ -10,7 +26,6 @@
         <item name="android:textColorSecondary">@color/text_secondary</item>
         <item name="materialButtonStyle">@style/AppButton</item>
         <item name="materialCardViewStyle">@style/AppCard</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
     <style name="Theme.FlavourBasedBuildTest" parent="Base.Theme.FlavourBasedBuildTest" />
@@ -19,18 +34,24 @@
     <style name="Theme.FlavourBasedBuildTest.Dev" parent="Base.Theme.FlavourBasedBuildTest">
         <item name="colorPrimary">@color/dev_primary</item>
         <item name="android:colorBackground">@color/dev_background</item>
+        <item name="android:windowBackground">@color/dev_background</item>
+        <item name="android:forceDarkAllowed">false</item>
     </style>
     
     <!-- Staging Theme -->
     <style name="Theme.FlavourBasedBuildTest.Staging" parent="Base.Theme.FlavourBasedBuildTest">
         <item name="colorPrimary">@color/staging_primary</item>
         <item name="android:colorBackground">@color/staging_background</item>
+        <item name="android:windowBackground">@color/staging_background</item>
+        <item name="android:forceDarkAllowed">false</item>
     </style>
     
     <!-- Prod Theme -->
     <style name="Theme.FlavourBasedBuildTest.Prod" parent="Base.Theme.FlavourBasedBuildTest">
         <item name="colorPrimary">@color/prod_primary</item>
         <item name="android:colorBackground">@color/prod_background</item>
+        <item name="android:windowBackground">@color/prod_background</item>
+        <item name="android:forceDarkAllowed">false</item>
     </style>
     
     <!-- Button Styles -->
