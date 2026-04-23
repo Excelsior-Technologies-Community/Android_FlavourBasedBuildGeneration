@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Dev App</string>
-    <string name="welcome_message">Welcome to Development Environment</string>
-    <string name="api_endpoint_label">API Endpoint: https://api.example.com/</string>
-    <string name="debug_mode">Debug Mode: ON</string>
+    <string name="welcome_message">Development Environment</string>
+    <string name="api_endpoint_label">API Endpoint</string>
+    <string name="debug_mode">Debug Mode</string>
+    <string name="build_info">Build Information</string>
+    <string name="flavor_name">Flavor: Dev</string>
+    <string name="version_info">Version: 1.0-dev</string>
+    <string name="debug_tools">Debug Tools</string>
+    <string name="toggle_logs">Enable Verbose Logs</string>
+    <string name="toggle_network">Network Inspector</string>
+    <string name="clear_cache">Clear Cache</string>
+    <string name="test_api">Test API Connection</string>
+    <string name="api_status">API Status</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="response_time">Response Time</string>
+    <string name="memory_usage">Memory Usage</string>
+    <string name="settings">Settings</string>
 </resources>

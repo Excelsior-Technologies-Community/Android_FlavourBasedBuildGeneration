@@ -2,17 +2,23 @@ package com.ext.flavourbasedbuildtest
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.Button
+import android.view.WindowInsetsController
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class MainActivity : AppCompatActivity() {
+open class BaseMainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        
+        // Set status bar to light theme (dark icons)
+        window.insetsController?.setSystemBarsAppearance(
+            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+        )
+        
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -48,18 +54,6 @@ class MainActivity : AppCompatActivity() {
         Log.d("MainActivity1", "Write Timeout: ${NetworkConfig.getWriteTimeout()}ms")
         Log.d("MainActivity1", "Retry on Failure: ${NetworkConfig.shouldRetryOnFailure()}")
         Log.d("MainActivity1", "Max Retries: ${NetworkConfig.getMaxRetries()}")
-
-        // Code-based button visibility control
-        val button1 = findViewById<Button>(R.id.button1)
-        val button2 = findViewById<Button>(R.id.button2)
-
-        if (BuildConfig.FLAVOR == "staging") {
-            button1.visibility = View.VISIBLE
-            button2.visibility = View.VISIBLE
-        } else {
-            button1.visibility = View.GONE
-            button2.visibility = View.GONE
-        }
 
         // Use baseUrl and authKey for your API calls (e.g., Retrofit)
         // val httpClient = OkHttpClient.Builder()
