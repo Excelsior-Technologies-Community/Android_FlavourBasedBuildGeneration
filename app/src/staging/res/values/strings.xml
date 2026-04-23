@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Staging App</string>
+    <string name="welcome_message">Welcome to Staging Environment</string>
+    <string name="api_endpoint_label">API Endpoint: https://api.example.com/</string>
+    <string name="debug_mode">Debug Mode: ON</string>
+</resources>
