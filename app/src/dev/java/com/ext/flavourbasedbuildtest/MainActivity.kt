@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import com.ext.flavourbasedbuildtest.databinding.ActivityMainBinding
 
 class MainActivity : BaseMainActivity() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -23,13 +24,13 @@ class MainActivity : BaseMainActivity() {
 
     private fun setupDevUI() {
         // Setup dev-specific UI elements
-        val verboseLogsSwitch = findViewById<Switch>(R.id.verboseLogsSwitch)
-        val networkInspectorSwitch = findViewById<Switch>(R.id.networkInspectorSwitch)
-        val testApiButton = findViewById<Button>(R.id.testApiButton)
-        val clearCacheButton = findViewById<Button>(R.id.clearCacheButton)
-        val memoryUsageText = findViewById<TextView>(R.id.memoryUsageText)
-        val connectionStatus = findViewById<TextView>(R.id.connectionStatus)
-        val responseTimeText = findViewById<TextView>(R.id.responseTimeText)
+        val verboseLogsSwitch = binding.verboseLogsSwitch
+        val networkInspectorSwitch = binding.networkInspectorSwitch
+        val testApiButton = binding.testApiButton
+        val clearCacheButton = binding.clearCacheButton
+        val memoryUsageText = binding.memoryUsageText
+        val connectionStatus = binding.connectionStatus
+        val responseTimeText = binding.responseTimeText
 
         // Load saved switch states
         verboseLogsSwitch.isChecked = sharedPreferences.getBoolean(KEY_VERBOSE_LOGS, false)
@@ -108,10 +109,8 @@ class MainActivity : BaseMainActivity() {
         sharedPreferences.edit().clear().apply()
 
         // Reset switches
-        val verboseLogsSwitch = findViewById<Switch>(R.id.verboseLogsSwitch)
-        val networkInspectorSwitch = findViewById<Switch>(R.id.networkInspectorSwitch)
-        verboseLogsSwitch?.isChecked = false
-        networkInspectorSwitch?.isChecked = false
+        binding.verboseLogsSwitch.isChecked = false
+        binding.networkInspectorSwitch.isChecked = false
 
         // Clear app cache
         try {
@@ -131,11 +130,10 @@ class MainActivity : BaseMainActivity() {
         }
 
         // Update memory usage after clearing
-        val memoryUsageText = findViewById<TextView>(R.id.memoryUsageText)
         val runtime = Runtime.getRuntime()
         val usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024)
         val maxMemory = runtime.maxMemory() / (1024 * 1024)
-        memoryUsageText?.text = "Memory Usage: $usedMemory MB / $maxMemory MB"
+        binding.memoryUsageText.text = "Memory Usage: $usedMemory MB / $maxMemory MB"
     }
 
     private fun deleteDir(dir: java.io.File): Boolean {

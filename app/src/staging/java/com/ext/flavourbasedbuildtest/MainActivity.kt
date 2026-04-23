@@ -1,12 +1,13 @@
 package com.ext.flavourbasedbuildtest
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.ext.flavourbasedbuildtest.databinding.ActivityMainBinding
 
 class MainActivity : BaseMainActivity() {
     private val testLogs = mutableListOf<String>()
@@ -18,12 +19,12 @@ class MainActivity : BaseMainActivity() {
 
     private fun setupStagingUI() {
         // Setup staging-specific UI elements
-        val runTestsButton = findViewById<Button>(R.id.runTestsButton)
-        val viewLogsButton = findViewById<Button>(R.id.viewLogsButton)
-        val unitTestsText = findViewById<TextView>(R.id.unitTestsText)
-        val integrationTestsText = findViewById<TextView>(R.id.integrationTestsText)
-        val pendingTestsText = findViewById<TextView>(R.id.pendingTestsText)
-        val performanceBar = findViewById<android.widget.ProgressBar>(R.id.performanceBar)
+        val runTestsButton = binding.runTestsButton
+        val viewLogsButton = binding.viewLogsButton
+        val unitTestsText = binding.unitTestsText
+        val integrationTestsText = binding.integrationTestsText
+        val pendingTestsText = binding.pendingTestsText
+        val performanceBar = binding.performanceBar
 
         // Button listeners
         runTestsButton.setOnClickListener {
@@ -76,7 +77,7 @@ class MainActivity : BaseMainActivity() {
             Status: SUCCESS
         """.trimIndent()
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("Test Results")
             .setMessage(results)
             .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
@@ -95,10 +96,11 @@ class MainActivity : BaseMainActivity() {
             text = logsText
             setPadding(40, 20, 40, 20)
             textSize = 12f
+            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
         }
         scrollView.addView(textView)
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("Test Logs")
             .setView(scrollView)
             .setPositiveButton("Close") { dialog, _ -> dialog.dismiss() }

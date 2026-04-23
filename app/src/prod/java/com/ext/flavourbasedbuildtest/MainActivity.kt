@@ -1,6 +1,5 @@
 package com.ext.flavourbasedbuildtest
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -10,6 +9,8 @@ import android.widget.EditText
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.ext.flavourbasedbuildtest.databinding.ActivityMainBinding
 
 class MainActivity : BaseMainActivity() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -26,15 +27,15 @@ class MainActivity : BaseMainActivity() {
 
     private fun setupProdUI() {
         // Setup prod-specific UI elements
-        val viewDetailsButton = findViewById<Button>(R.id.viewDetailsButton)
-        val settingsButton = findViewById<Button>(R.id.settingsButton)
-        val activeUsersText = findViewById<TextView>(R.id.activeUsersText)
-        val revenueText = findViewById<TextView>(R.id.revenueText)
-        val conversionText = findViewById<TextView>(R.id.conversionText)
-        val satisfactionText = findViewById<TextView>(R.id.satisfactionText)
-        val uptimeText = findViewById<TextView>(R.id.uptimeText)
-        val responseTimeText = findViewById<TextView>(R.id.responseTimeText)
-        val errorRateText = findViewById<TextView>(R.id.errorRateText)
+        val viewDetailsButton = binding.viewDetailsButton
+        val settingsButton = binding.settingsButton
+        val activeUsersText = binding.activeUsersText
+        val revenueText = binding.revenueText
+        val conversionText = binding.conversionText
+        val satisfactionText = binding.satisfactionText
+        val uptimeText = binding.uptimeText
+        val responseTimeText = binding.responseTimeText
+        val errorRateText = binding.errorRateText
 
         // Button listeners
         viewDetailsButton.setOnClickListener {
@@ -111,10 +112,11 @@ class MainActivity : BaseMainActivity() {
             text = details
             setPadding(40, 20, 40, 20)
             textSize = 12f
+            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
         }
         scrollView.addView(textView)
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("Detailed Analytics")
             .setView(scrollView)
             .setPositiveButton("Close") { dialog, _ -> dialog.dismiss() }
@@ -184,7 +186,7 @@ class MainActivity : BaseMainActivity() {
         settingsLayout.addView(languageText)
         settingsLayout.addView(languageSpinner)
 
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle("Settings")
             .setView(settingsLayout)
             .setPositiveButton("Save") { _, _ ->
