@@ -3,10 +3,13 @@ default_platform(:android)
 platform :android do
   desc "Build and deploy to Play Store - Internal Testing"
   lane :deploy_internal do
+    json_key_path = ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json"
+    json_key_content = File.read(json_key_path) if File.exist?(json_key_path)
+    
     upload_to_play_store(
       aab: "../app/build/outputs/bundle/prodRelease/app-prod-release.aab",
       track: "internal",
-      json_key: File.read(ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json") if ENV["PLAY_JSON_KEY_PATH"] || File.exist?("play-store-service-account.json"),
+      json_key: json_key_content,
       package_name: "com.ext.flavourbasedbuildtest",
       skip_upload_metadata: true,
       skip_upload_images: true,
@@ -18,10 +21,13 @@ platform :android do
 
   desc "Build and deploy to Play Store - Alpha Testing"
   lane :deploy_alpha do
+    json_key_path = ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json"
+    json_key_content = File.read(json_key_path) if File.exist?(json_key_path)
+    
     upload_to_play_store(
       aab: "../app/build/outputs/bundle/prodRelease/app-prod-release.aab",
       track: "alpha",
-      json_key: File.read(ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json") if ENV["PLAY_JSON_KEY_PATH"] || File.exist?("play-store-service-account.json"),
+      json_key: json_key_content,
       package_name: "com.ext.flavourbasedbuildtest",
       skip_upload_metadata: true,
       skip_upload_images: true,
@@ -33,10 +39,13 @@ platform :android do
 
   desc "Build and deploy to Play Store - Beta Testing"
   lane :deploy_beta do
+    json_key_path = ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json"
+    json_key_content = File.read(json_key_path) if File.exist?(json_key_path)
+    
     upload_to_play_store(
       aab: "../app/build/outputs/bundle/prodRelease/app-prod-release.aab",
       track: "beta",
-      json_key: File.read(ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json") if ENV["PLAY_JSON_KEY_PATH"] || File.exist?("play-store-service-account.json"),
+      json_key: json_key_content,
       package_name: "com.ext.flavourbasedbuildtest",
       skip_upload_metadata: true,
       skip_upload_images: true,
@@ -48,11 +57,14 @@ platform :android do
 
   desc "Build and deploy to Play Store - Production"
   lane :deploy_production do
+    json_key_path = ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json"
+    json_key_content = File.read(json_key_path) if File.exist?(json_key_path)
     rollout_percent = ENV["ROLLOUT_PERCENT"] ? ENV["ROLLOUT_PERCENT"].to_f : 1.0
+    
     upload_to_play_store(
       aab: "../app/build/outputs/bundle/prodRelease/app-prod-release.aab",
       track: "production",
-      json_key: File.read(ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json") if ENV["PLAY_JSON_KEY_PATH"] || File.exist?("play-store-service-account.json"),
+      json_key: json_key_content,
       package_name: "com.ext.flavourbasedbuildtest",
       skip_upload_metadata: true,
       skip_upload_images: true,
@@ -98,13 +110,16 @@ platform :android do
 
   desc "Supply metadata to Play Store"
   lane :supply_metadata do
+    json_key_path = ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json"
+    json_key_content = File.read(json_key_path) if File.exist?(json_key_path)
+    
     upload_to_play_store(
       skip_upload_apk: true,
       skip_upload_aab: true,
       skip_upload_metadata: false,
       skip_upload_images: false,
       skip_upload_screenshots: false,
-      json_key: File.read(ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json") if ENV["PLAY_JSON_KEY_PATH"] || File.exist?("play-store-service-account.json"),
+      json_key: json_key_content,
       package_name: "com.ext.flavourbasedbuildtest"
     )
   end
