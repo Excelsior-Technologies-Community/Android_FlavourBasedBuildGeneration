@@ -76,7 +76,21 @@ jobs:
         run: |
           FLAVOR="${{ github.event.inputs.flavor || 'prod' }}"
           echo "Building flavor: $FLAVOR"
-          ./gradlew bundle${FLAVOR^}Release --stacktrace
+          case "$FLAVOR" in
+            prod)
+              ./gradlew bundleProdRelease --stacktrace
+              ;;
+            staging)
+              ./gradlew bundleStagingRelease --stacktrace
+              ;;
+            dev)
+              ./gradlew bundleDevRelease --stacktrace
+              ;;
+            *)
+              echo "Unknown flavor: $FLAVOR"
+              exit 1
+              ;;
+          esac
 
       - name: Verify AAB exists
         run: |
