@@ -1,2 +1,1 @@
-json_key_data("") # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
 package_name("com.ext.flavourbasedbuildtest") # e.g. com.yourcompany.yourapp

@@ -7,7 +7,7 @@ platform :android do
     json_key_content = File.read(json_key_path) if File.exist?(json_key_path)
     
     upload_to_play_store(
-      aab: "../app/build/outputs/bundle/prodRelease/app-prod-release.aab",
+      aab: "app/build/outputs/bundle/prodRelease/app-prod-release.aab",
       track: "internal",
       json_key: json_key_content,
       package_name: "com.ext.flavourbasedbuildtest",
@@ -25,7 +25,7 @@ platform :android do
     json_key_content = File.read(json_key_path) if File.exist?(json_key_path)
     
     upload_to_play_store(
-      aab: "../app/build/outputs/bundle/prodRelease/app-prod-release.aab",
+      aab: "app/build/outputs/bundle/prodRelease/app-prod-release.aab",
       track: "alpha",
       json_key: json_key_content,
       package_name: "com.ext.flavourbasedbuildtest",
@@ -62,7 +62,7 @@ platform :android do
     rollout_percent = ENV["ROLLOUT_PERCENT"] ? ENV["ROLLOUT_PERCENT"].to_f : 1.0
     
     upload_to_play_store(
-      aab: "../app/build/outputs/bundle/prodRelease/app-prod-release.aab",
+      aab: "app/build/outputs/bundle/prodRelease/app-prod-release.aab",
       track: "production",
       json_key: json_key_content,
       package_name: "com.ext.flavourbasedbuildtest",
