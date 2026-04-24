@@ -15,10 +15,30 @@ android {
         minSdk = 26
         targetSdk = 36
         
-        // Auto versioning: Use CI version code or timestamp-based for local builds
+        // Auto versioning: Use CI version code or read from .version/.versioncode files for local builds
         val ciVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
-        versionCode = ciVersionCode ?: (System.currentTimeMillis() / 1000).toInt()
-        versionName = System.getenv("VERSION_NAME") ?: "1.0.${versionCode}"
+        val ciVersionName = System.getenv("VERSION_NAME")
+        
+        if (ciVersionCode != null && ciVersionName != null) {
+            versionCode = ciVersionCode
+            versionName = ciVersionName
+        } else {
+            // Local build: read from version files or use defaults
+            val versionFile = File(projectDir, ".version")
+            val versionCodeFile = File(projectDir, ".versioncode")
+            
+            versionName = if (versionFile.exists()) {
+                versionFile.readText().trim()
+            } else {
+                "1.0.0"
+            }
+            
+            versionCode = if (versionCodeFile.exists()) {
+                versionCodeFile.readText().trim().toIntOrNull() ?: 1
+            } else {
+                1
+            }
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
