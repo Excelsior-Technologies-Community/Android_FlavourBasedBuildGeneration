@@ -72,7 +72,11 @@ jobs:
 
       - name: Decode Play Store JSON Key
         run: |
-          echo "${{ secrets.PLAY_JSON_KEY_DATA }}" | base64 -d > play-store-service-account.json
+          # Try to decode as base64, if that fails use as-is
+          echo "${{ secrets.PLAY_JSON_KEY_DATA }}" | base64 -d > play-store-service-account.json 2>/dev/null || echo "${{ secrets.PLAY_JSON_KEY_DATA }}" > play-store-service-account.json
+          echo "Checking if JSON key file exists and has content:"
+          ls -la play-store-service-account.json
+          head -c 100 play-store-service-account.json
 
       - name: Generate unique version code
         id: version
