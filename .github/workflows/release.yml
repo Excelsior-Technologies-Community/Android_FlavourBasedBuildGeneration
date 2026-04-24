@@ -64,6 +64,10 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/your_keystore.jks
 
+      - name: Decode Play Store JSON Key
+        run: |
+          echo "${{ secrets.PLAY_JSON_KEY_DATA }}" > play-store-service-account.json
+
       - name: Generate unique version code
         id: version
         run: |
@@ -115,7 +119,7 @@ jobs:
 
       - name: Deploy to Play Store
         env:
-          PLAY_JSON_KEY_DATA: ${{ secrets.PLAY_JSON_KEY_DATA }}
+          PLAY_JSON_KEY_PATH: "play-store-service-account.json"
           CHANGELOG: ${{ github.event.inputs.changelog || 'Automated release from CI/CD pipeline' }}
           ROLLOUT_PERCENT: ${{ github.event.inputs.rollout || '1.0' }}
         run: |
