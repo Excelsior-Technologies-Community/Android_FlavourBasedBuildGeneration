@@ -88,8 +88,13 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add .version .versioncode
-          git commit -m "Bump version to ${{ steps.version.outputs.VERSION_NAME }}" || echo "No changes to commit"
-          git push || echo "Push failed or no changes"
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Bump version to ${{ steps.version.outputs.VERSION_NAME }}"
+            git push
+            echo "Version files committed and pushed successfully"
+          fi
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
