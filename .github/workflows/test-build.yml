@@ -9,16 +9,6 @@ on:
       - main
       - test
   workflow_dispatch:
-    inputs:
-      flavor:
-        description: 'Build flavor (dev, staging, prod)'
-        required: false
-        default: 'prod'
-        type: choice
-        options:
-          - dev
-          - staging
-          - prod
 
 env:
   JAVA_VERSION: '17'
@@ -85,7 +75,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build AAB
+      - name: Build AAB (Dev)
         env:
           KEYSTORE_PATH: "your_keystore.jks"
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -94,64 +84,72 @@ jobs:
           VERSION_CODE: ${{ steps.version.outputs.VERSION_CODE }}
           VERSION_NAME: ${{ steps.version.outputs.VERSION_NAME }}
         run: |
-          FLAVOR="${{ github.event.inputs.flavor || 'prod' }}"
-          echo "Building flavor: $FLAVOR"
-          case "$FLAVOR" in
-            prod)
-              ./gradlew bundleProdRelease --stacktrace
-              ;;
-            staging)
-              ./gradlew bundleStagingRelease --stacktrace
-              ;;
-            dev)
-              ./gradlew bundleDevRelease --stacktrace
-              ;;
-            *)
-              echo "Unknown flavor: $FLAVOR"
-              exit 1
-              ;;
-          esac
+          ./gradlew bundleDevRelease --stacktrace
 
-      - name: Verify AAB exists
+      - name: Build AAB (Staging)
+        env:
+          KEYSTORE_PATH: "your_keystore.jks"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_CODE: ${{ steps.version.outputs.VERSION_CODE }}
+          VERSION_NAME: ${{ steps.version.outputs.VERSION_NAME }}
         run: |
-          FLAVOR="${{ github.event.inputs.flavor || 'prod' }}"
-          FLAVOR_LOWER=$(echo "$FLAVOR" | tr '[:upper:]' '[:lower:]')
-          AAB_PATH="app/build/outputs/bundle/${FLAVOR_LOWER}Release/app-${FLAVOR_LOWER}-release.aab"
-          
-          if [ ! -f "$AAB_PATH" ]; then
-            echo "Error: AAB file not found at $AAB_PATH"
-            echo "Listing build outputs:"
-            find app/build/outputs -name "*.aab" -o -name "*.apk" || true
-            exit 1
-          fi
-          echo "✅ AAB file found successfully"
-          ls -lh "$AAB_PATH"
+          ./gradlew bundleStagingRelease --stacktrace
 
-      - name: Upload AAB as artifact
+      - name: Build AAB (Production)
+        env:
+          KEYSTORE_PATH: "your_keystore.jks"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_CODE: ${{ steps.version.outputs.VERSION_CODE }}
+          VERSION_NAME: ${{ steps.version.outputs.VERSION_NAME }}
+        run: |
+          ./gradlew bundleProdRelease --stacktrace
+
+      - name: Verify AABs exist
+        run: |
+          for flavor in dev staging prod; do
+            AAB_PATH="app/build/outputs/bundle/${flavor}Release/app-${flavor}-release.aab"
+            if [ ! -f "$AAB_PATH" ]; then
+              echo "Error: AAB file not found at $AAB_PATH"
+              echo "Listing build outputs:"
+              find app/build/outputs -name "*.aab" -o -name "*.apk" || true
+              exit 1
+            fi
+            echo "✅ AAB file found successfully: $AAB_PATH"
+            ls -lh "$AAB_PATH"
+          done
+
+      - name: Upload AABs as artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-${{ github.event.inputs.flavor || 'prod' }}-release-${{ steps.version.outputs.VERSION_CODE }}
-          path: app/build/outputs/bundle/${{ github.event.inputs.flavor || 'prod' }}Release/app-${{ github.event.inputs.flavor || 'prod' }}-release.aab
+          name: app-test-release-${{ steps.version.outputs.VERSION_CODE }}
+          path: |
+            app/build/outputs/bundle/devRelease/app-dev-release.aab
+            app/build/outputs/bundle/stagingRelease/app-staging-release.aab
+            app/build/outputs/bundle/prodRelease/app-prod-release.aab
           retention-days: 30
 
       - name: Build Summary
         run: |
           echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Flavor**: ${{ github.event.inputs.flavor || 'prod' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Flavors**: dev, staging, prod" >> $GITHUB_STEP_SUMMARY
           echo "- **Version Code**: ${{ steps.version.outputs.VERSION_CODE }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Version Name**: ${{ steps.version.outputs.VERSION_NAME }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Status**: ✅ Build successful" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "AAB artifact has been uploaded and can be downloaded from the workflow run." >> $GITHUB_STEP_SUMMARY
+          echo "All 3 AAB artifacts have been uploaded and can be downloaded from the workflow run." >> $GITHUB_STEP_SUMMARY
 
       - name: Notify build status
         if: always()
         run: |
           if [ ${{ job.status }} == 'success' ]; then
-            echo "✅ Build successful for ${{ github.event.inputs.flavor || 'prod' }} flavor"
+            echo "✅ Build successful for all flavors (dev, staging, prod)"
             echo "Version: ${{ steps.version.outputs.VERSION_NAME }}"
-            echo "Download AAB from workflow artifacts"
+            echo "Download AABs from workflow artifacts"
           else
             echo "❌ Build failed"
             echo "Check workflow logs for details"
