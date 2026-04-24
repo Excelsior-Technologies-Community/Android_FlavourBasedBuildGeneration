@@ -2,6 +2,7 @@ name: Android CI/CD - Play Store Release
 
 permissions:
   contents: write
+  secrets: write
 
 on:
   push:
@@ -75,14 +76,50 @@ jobs:
       - name: Generate unique version code
         id: version
         run: |
-          # Use GitHub run number for unique version code
-          VERSION_CODE=${{ github.run_number }}
-          VERSION_NAME="1.0.${VERSION_CODE}"
+          # Read current version from secret or initialize
+          CURRENT_VERSION_CODE="${{ secrets.VERSION_CODE }}"
+          CURRENT_VERSION_NAME="${{ secrets.VERSION_NAME }}"
           
-          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_OUTPUT
-          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_OUTPUT
-          echo "Generated version code: $VERSION_CODE"
-          echo "Generated version name: $VERSION_NAME"
+          if [ -z "$CURRENT_VERSION_CODE" ]; then
+            CURRENT_VERSION_CODE=0
+          fi
+          if [ -z "$CURRENT_VERSION_NAME" ]; then
+            CURRENT_VERSION_NAME="1.0.0"
+          fi
+          
+          echo "Current version code: $CURRENT_VERSION_CODE"
+          echo "Current version name: $CURRENT_VERSION_NAME"
+          
+          # Increment version code
+          NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
+          
+          # Increment patch version
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION_NAME"
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION_NAME="${MAJOR}.${MINOR}.${NEW_PATCH}"
+          
+          echo "VERSION_CODE=$NEW_VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "VERSION_NAME=$NEW_VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "NEW_VERSION_CODE=$NEW_VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "NEW_VERSION_NAME=$NEW_VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "Generated version code: $NEW_VERSION_CODE"
+          echo "Generated version name: $NEW_VERSION_NAME"
+
+      - name: Update version secrets
+        uses: hmanzur/actions-set-secret@v2.1.0
+        with:
+          name: 'VERSION_CODE'
+          value: ${{ steps.version.outputs.NEW_VERSION_CODE }}
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update version name secret
+        uses: hmanzur/actions-set-secret@v2.1.0
+        with:
+          name: 'VERSION_NAME'
+          value: ${{ steps.version.outputs.NEW_VERSION_NAME }}
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
