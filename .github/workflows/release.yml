@@ -72,21 +72,8 @@ jobs:
 
       - name: Create Play Store JSON Key
         run: |
-          # Use dummy JSON key for testing
-          cat > fastlane/play-store-service-account.json << 'EOF'
-{
-  "type": "service_account",
-  "project_id": "dummy-project",
-  "private_key_id": "dummy-key-id",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCdummy\n-----END PRIVATE KEY-----\n",
-  "client_email": "dummy@dummy-project.iam.gserviceaccount.com",
-  "client_id": "dummy-client-id",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dummy%40dummy-project.iam.gserviceaccount.com"
-}
-EOF
+          # Use dummy JSON key for testing (base64 encoded to avoid YAML issues)
+          echo 'eyJ0eXBlIjoic2VydmljZV9hY2NvdW50IiwicHJvamVjdF9pZCI6ImR1bW15LXByb2plY3QiLCJwcml2YXRlX2tleV9pZCI6ImR1bW15LWtleS1pZCIsInByaXZhdGVfa2V5IjoiLS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tXG5NSUlFdklCQURBTkJna3Foa2lHOXcwQkFRUUZBUUVCSUZBS2N3Z2dTakFnRUFBb0lCQVFDZHVtbXlcbi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS1cbiIsImNsaWVudF9lbWFpbCI6ImR1bW15QGR1bW15LXByb2plY3QuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGllbnRfaWQiOiJkdW1teS1jbGllbnQtaWQiLCJhdXRoX3VyaSI6Imh0dHBzOi8vYWNjb3VudHMuZ29vZ2xlLmNvbS9vL29hdXRoMi9hdXRoIiwidG9rZW5fdXJpIjoiaHR0cHM6Ly9vYXV0aDIuZ29vZ2xlYXBpcy5jb20vdG9rZW4iLCJhdXRoX3Byb3ZpZGVyX3g1MDlfY2VydF91cmwiOiJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9vYXV0aDIvdjEvY2VydHMiLCJjbGllbnRfeDUwOV9jZXJ0X3VybCI6Imh0dHBzOi8vd3d3Lmdvb2dsZWFwaXMuY29tL3JvYm90L3YxL21ldGFkYXRhL3g1MC9kdW1teSU0MGR1bW15LXByb2plY3QuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20ifQ==' | base64 -d > fastlane/play-store-service-account.json
           echo "Created dummy JSON key file in fastlane directory for testing"
 
       - name: Generate unique version code
