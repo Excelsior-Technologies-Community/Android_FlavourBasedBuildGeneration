@@ -70,13 +70,24 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/your_keystore.jks
 
-      - name: Decode Play Store JSON Key
+      - name: Create Play Store JSON Key
         run: |
-          # Try to decode as base64, if that fails use as-is
-          echo "${{ secrets.PLAY_JSON_KEY_DATA }}" | base64 -d > play-store-service-account.json 2>/dev/null || echo "${{ secrets.PLAY_JSON_KEY_DATA }}" > play-store-service-account.json
-          echo "Checking if JSON key file exists and has content:"
-          ls -la play-store-service-account.json
-          head -c 100 play-store-service-account.json
+          # Use dummy JSON key for testing
+          cat > play-store-service-account.json << 'EOF'
+{
+  "type": "service_account",
+  "project_id": "dummy-project",
+  "private_key_id": "dummy-key-id",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCdummy\n-----END PRIVATE KEY-----\n",
+  "client_email": "dummy@dummy-project.iam.gserviceaccount.com",
+  "client_id": "dummy-client-id",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/dummy%40dummy-project.iam.gserviceaccount.com"
+}
+EOF
+          echo "Created dummy JSON key file for testing"
 
       - name: Generate unique version code
         id: version
