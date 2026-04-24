@@ -1,0 +1,152 @@
+name: Android CI/CD - Play Store Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      track:
+        description: 'Play Store track (internal, alpha, beta, production)'
+        required: false
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+      rollout:
+        description: 'Rollout percentage for production (0.01 to 1.0)'
+        required: false
+        default: '1.0'
+      changelog:
+        description: 'Release changelog'
+        required: false
+        default: 'Automated release from CI/CD pipeline'
+
+env:
+  JAVA_VERSION: '17'
+  JAVA_DISTRIBUTION: 'temurin'
+  RUBY_VERSION: '3.2'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Install Fastlane
+        run: |
+          gem install fastlane -NV
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/release.keystore
+
+      - name: Generate unique version code
+        id: version
+        run: |
+          # Use timestamp-based version code to ensure uniqueness
+          VERSION_CODE=$(date +%s)
+          VERSION_NAME="1.0.$VERSION_CODE"
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "Generated version code: $VERSION_CODE"
+          echo "Generated version name: $VERSION_NAME"
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build AAB (Production)
+        env:
+          KEYSTORE_PATH: "app/release.keystore"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_CODE: ${{ steps.version.outputs.VERSION_CODE }}
+          VERSION_NAME: ${{ steps.version.outputs.VERSION_NAME }}
+        run: |
+          ./gradlew bundleProdRelease --stacktrace
+
+      - name: Verify AAB exists
+        run: |
+          AAB_PATH="app/build/outputs/bundle/prodRelease/app-prod-release.aab"
+          if [ ! -f "$AAB_PATH" ]; then
+            echo "Error: AAB file not found at $AAB_PATH"
+            exit 1
+          fi
+          echo "AAB file found successfully"
+          ls -lh "$AAB_PATH"
+
+      - name: Upload AAB as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-prod-release-${{ steps.version.outputs.VERSION_CODE }}
+          path: app/build/outputs/bundle/prodRelease/app-prod-release.aab
+          retention-days: 30
+
+      - name: Deploy to Play Store
+        env:
+          PLAY_JSON_KEY_DATA: ${{ secrets.PLAY_JSON_KEY_DATA }}
+          CHANGELOG: ${{ github.event.inputs.changelog || 'Automated release from CI/CD pipeline' }}
+          ROLLOUT_PERCENT: ${{ github.event.inputs.rollout || '1.0' }}
+        run: |
+          TRACK="${{ github.event.inputs.track || 'internal' }}"
+          echo "Deploying to track: $TRACK"
+          
+          case $TRACK in
+            internal)
+              fastlane deploy_internal
+              ;;
+            alpha)
+              fastlane deploy_alpha
+              ;;
+            beta)
+              fastlane deploy_beta
+              ;;
+            production)
+              fastlane deploy_production
+              ;;
+            *)
+              echo "Invalid track specified, defaulting to internal"
+              fastlane deploy_internal
+              ;;
+          esac
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ Deployment successful to ${{ github.event.inputs.track || 'internal' }} track"
+            echo "Version: ${{ steps.version.outputs.VERSION_NAME }}"
+          else
+            echo "❌ Deployment failed"
+            exit 1
+          fi

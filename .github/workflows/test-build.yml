@@ -1,0 +1,124 @@
+name: Android CI/CD - Test Build Only
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      flavor:
+        description: 'Build flavor (dev, staging, prod)'
+        required: false
+        default: 'prod'
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+
+env:
+  JAVA_VERSION: '17'
+  JAVA_DISTRIBUTION: 'temurin'
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/release.keystore
+
+      - name: Generate unique version code
+        id: version
+        run: |
+          # Use timestamp-based version code to ensure uniqueness
+          VERSION_CODE=$(date +%s)
+          VERSION_NAME="1.0.$VERSION_CODE"
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "Generated version code: $VERSION_CODE"
+          echo "Generated version name: $VERSION_NAME"
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build AAB
+        env:
+          KEYSTORE_PATH: "app/release.keystore"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_CODE: ${{ steps.version.outputs.VERSION_CODE }}
+          VERSION_NAME: ${{ steps.version.outputs.VERSION_NAME }}
+        run: |
+          FLAVOR="${{ github.event.inputs.flavor || 'prod' }}"
+          echo "Building flavor: $FLAVOR"
+          ./gradlew bundle${FLAVOR^}Release --stacktrace
+
+      - name: Verify AAB exists
+        run: |
+          FLAVOR="${{ github.event.inputs.flavor || 'prod' }}"
+          FLAVOR_LOWER=$(echo "$FLAVOR" | tr '[:upper:]' '[:lower:]')
+          AAB_PATH="app/build/outputs/bundle/${FLAVOR_LOWER}Release/app-${FLAVOR_LOWER}-release.aab"
+          
+          if [ ! -f "$AAB_PATH" ]; then
+            echo "Error: AAB file not found at $AAB_PATH"
+            echo "Listing build outputs:"
+            find app/build/outputs -name "*.aab" -o -name "*.apk" || true
+            exit 1
+          fi
+          echo "✅ AAB file found successfully"
+          ls -lh "$AAB_PATH"
+
+      - name: Upload AAB as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-${{ github.event.inputs.flavor || 'prod' }}-release-${{ steps.version.outputs.VERSION_CODE }}
+          path: app/build/outputs/bundle/${{ github.event.inputs.flavor || 'prod' }}Release/app-${{ github.event.inputs.flavor || 'prod' }}-release.aab
+          retention-days: 30
+
+      - name: Build Summary
+        run: |
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Flavor**: ${{ github.event.inputs.flavor || 'prod' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version Code**: ${{ steps.version.outputs.VERSION_CODE }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version Name**: ${{ steps.version.outputs.VERSION_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Status**: ✅ Build successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "AAB artifact has been uploaded and can be downloaded from the workflow run." >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify build status
+        if: always()
+        run: |
+          if [ ${{ job.status }} == 'success' ]; then
+            echo "✅ Build successful for ${{ github.event.inputs.flavor || 'prod' }} flavor"
+            echo "Version: ${{ steps.version.outputs.VERSION_NAME }}"
+            echo "Download AAB from workflow artifacts"
+          else
+            echo "❌ Build failed"
+            echo "Check workflow logs for details"
+            exit 1
+          fi

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -13,18 +14,21 @@ android {
         applicationId = "com.ext.flavourbasedbuildtest"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        
+        // Auto versioning: Use CI version code or timestamp-based for local builds
+        val ciVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
+        versionCode = ciVersionCode ?: (System.currentTimeMillis() / 1000).toInt()
+        versionName = System.getenv("VERSION_NAME") ?: "1.0.${versionCode}"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
         create("release") {
-            storeFile = file("../your_keystore.jks")
-            storePassword = "123456"
-            keyAlias = "your_key_alias"
-            keyPassword = "123456"
+            storeFile = file(System.getenv("KEYSTORE_PATH") ?: "../your_keystore.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "123456"
+            keyAlias = System.getenv("KEY_ALIAS") ?: "your_key_alias"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "123456"
         }
     }
 
@@ -107,6 +111,13 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom("$projectDir/config/detekt/detekt.yml")
+    baseline = file("$projectDir/config/detekt/baseline.xml")
 }
 
 dependencies {

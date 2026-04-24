@@ -13,3 +13,25 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Keystore files - NEVER commit these
+*.jks
+*.keystore
+*.p12
+*.pfx
+app/release.keystore
+
+# Service account JSON keys - NEVER commit these
+*-service-account.json
+service-account.json
+google-play-api-key.json
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/.env
+
+# Ruby/Gem
+Gemfile.lock
