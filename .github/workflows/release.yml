@@ -75,83 +75,14 @@ jobs:
       - name: Generate unique version code
         id: version
         run: |
-          # Read current version from repo or initialize
-          CURRENT_VERSION=$(git show HEAD:.version 2>/dev/null || echo "1.0.0")
-          CURRENT_VERSION_CODE=$(git show HEAD:.versioncode 2>/dev/null || echo "0")
+          # Use GitHub run number for unique version code
+          VERSION_CODE=${{ github.run_number }}
+          VERSION_NAME="1.0.${VERSION_CODE}"
           
-          echo "Current version: $CURRENT_VERSION"
-          echo "Current version code: $CURRENT_VERSION_CODE"
-          
-          # Increment patch version
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
-          
-          # Increment version code
-          NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
-          
-          echo "VERSION_CODE=$NEW_VERSION_CODE" >> $GITHUB_OUTPUT
-          echo "VERSION_NAME=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "NEW_VERSION_CODE=$NEW_VERSION_CODE" >> $GITHUB_OUTPUT
-          echo "Generated version code: $NEW_VERSION_CODE"
-          echo "Generated version name: $NEW_VERSION"
-
-      - name: Update version files in repo
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const version = '${{ steps.version.outputs.NEW_VERSION }}';
-            const versionCode = '${{ steps.version.outputs.NEW_VERSION_CODE }}';
-            
-            // Update .version file
-            await github.rest.repos.createOrUpdateFileContents({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path: '.version',
-              message: `Bump version to ${version}`,
-              content: Buffer.from(version).toString('base64'),
-              sha: (await github.rest.repos.getContent({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                path: '.version'
-              })).data.sha
-            }).catch(e => {
-              if (e.status !== 404) throw e;
-              // File doesn't exist, create it
-              return github.rest.repos.createOrUpdateFileContents({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                path: '.version',
-                message: `Initialize version to ${version}`,
-                content: Buffer.from(version).toString('base64')
-              });
-            });
-            
-            // Update .versioncode file
-            await github.rest.repos.createOrUpdateFileContents({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path: '.versioncode',
-              message: `Bump version code to ${versionCode}`,
-              content: Buffer.from(versionCode).toString('base64'),
-              sha: (await github.rest.repos.getContent({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                path: '.versioncode'
-              })).data.sha
-            }).catch(e => {
-              if (e.status !== 404) throw e;
-              // File doesn't exist, create it
-              return github.rest.repos.createOrUpdateFileContents({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                path: '.versioncode',
-                message: `Initialize version code to ${versionCode}`,
-                content: Buffer.from(versionCode).toString('base64')
-              });
-            });
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "Generated version code: $VERSION_CODE"
+          echo "Generated version name: $VERSION_NAME"
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
