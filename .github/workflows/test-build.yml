@@ -1,5 +1,8 @@
 name: Android CI/CD - Test Build Only
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:

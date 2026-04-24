@@ -1,5 +1,8 @@
 name: Android CI/CD - Play Store Release
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
