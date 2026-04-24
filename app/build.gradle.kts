@@ -14,7 +14,8 @@ android {
         applicationId = "com.ext.flavourbasedbuildtest"
         minSdk = 26
         targetSdk = 36
-        
+
+
         // Auto versioning: Use CI version code or read from .version/.versioncode files for local builds
         val ciVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
         val ciVersionName = System.getenv("VERSION_NAME")
