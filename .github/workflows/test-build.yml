@@ -56,10 +56,10 @@ jobs:
           ref: version-tracking
           path: version-files
 
-      - name: Generate unique version code
+      - name: Read current version
         id: version
         run: |
-          # Read current version from version-tracking branch
+          # Read current version from version-tracking branch (no increment for test builds)
           if [ -f "version-files/.version" ]; then
             CURRENT_VERSION=$(cat version-files/.version)
             echo "Current version: $CURRENT_VERSION"
@@ -76,31 +76,10 @@ jobs:
             echo "Initializing version code: $CURRENT_VERSION_CODE"
           fi
           
-          # Increment patch version
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
-          
-          # Increment version code
-          NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
-          
-          # Write new version to files
-          echo "$NEW_VERSION" > version-files/.version
-          echo "$NEW_VERSION_CODE" > version-files/.versioncode
-          
-          echo "VERSION_CODE=$NEW_VERSION_CODE" >> $GITHUB_OUTPUT
-          echo "VERSION_NAME=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "Generated version code: $NEW_VERSION_CODE"
-          echo "Generated version name: $NEW_VERSION"
-
-      - name: Commit and push version files
-        run: |
-          cd version-files
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add .version .versioncode
-          git commit -m "Bump version to ${{ steps.version.outputs.VERSION_NAME }}"
-          git push
+          echo "VERSION_CODE=$CURRENT_VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "VERSION_NAME=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Using version code: $CURRENT_VERSION_CODE"
+          echo "Using version name: $CURRENT_VERSION"
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
