@@ -27,6 +27,8 @@ env:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout code
@@ -48,17 +50,57 @@ jobs:
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/your_keystore.jks
 
+      - name: Checkout version-tracking branch
+        uses: actions/checkout@v4
+        with:
+          ref: version-tracking
+          path: version-files
+
       - name: Generate unique version code
         id: version
         run: |
-          # Use GitHub run number for unique version code
-          VERSION_CODE=${{ github.run_number }}
-          VERSION_NAME="1.0.${VERSION_CODE}"
+          # Read current version from version-tracking branch
+          if [ -f "version-files/.version" ]; then
+            CURRENT_VERSION=$(cat version-files/.version)
+            echo "Current version: $CURRENT_VERSION"
+          else
+            CURRENT_VERSION="1.0.0"
+            echo "Initializing version: $CURRENT_VERSION"
+          fi
           
-          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_OUTPUT
-          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_OUTPUT
-          echo "Generated version code: $VERSION_CODE"
-          echo "Generated version name: $VERSION_NAME"
+          if [ -f "version-files/.versioncode" ]; then
+            CURRENT_VERSION_CODE=$(cat version-files/.versioncode)
+            echo "Current version code: $CURRENT_VERSION_CODE"
+          else
+            CURRENT_VERSION_CODE=0
+            echo "Initializing version code: $CURRENT_VERSION_CODE"
+          fi
+          
+          # Increment patch version
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+          
+          # Increment version code
+          NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
+          
+          # Write new version to files
+          echo "$NEW_VERSION" > version-files/.version
+          echo "$NEW_VERSION_CODE" > version-files/.versioncode
+          
+          echo "VERSION_CODE=$NEW_VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "VERSION_NAME=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Generated version code: $NEW_VERSION_CODE"
+          echo "Generated version name: $NEW_VERSION"
+
+      - name: Commit and push version files
+        run: |
+          cd version-files
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .version .versioncode
+          git commit -m "Bump version to ${{ steps.version.outputs.VERSION_NAME }}"
+          git push
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
