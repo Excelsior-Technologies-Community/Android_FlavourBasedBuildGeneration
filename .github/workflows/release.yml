@@ -2,7 +2,6 @@ name: Android CI/CD - Play Store Release
 
 permissions:
   contents: write
-  secrets: write
 
 on:
   push:
@@ -39,6 +38,9 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: write
+      secrets: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
