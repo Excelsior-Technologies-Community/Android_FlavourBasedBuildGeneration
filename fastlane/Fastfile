@@ -25,6 +25,54 @@ platform :android do
     )
   end
 
+  desc "Build and deploy dev flavor to Play Store"
+  lane :deploy_dev do
+    json_key_path = ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json"
+    json_key_content = File.read(json_key_path) if File.exist?(json_key_path)
+    
+    if json_key_content.nil? || json_key_content.empty?
+      UI.error("JSON key file not found or empty at: #{json_key_path}")
+      UI.error("Current directory: #{Dir.pwd}")
+      UI.error("Files in current directory: #{Dir.entries('.').join(', ')}")
+    end
+    
+    upload_to_play_store(
+      aab: "app/build/outputs/bundle/devRelease/app-dev-release.aab",
+      track: "internal",
+      json_key: json_key_content,
+      package_name: "com.ext.flavourbasedbuildtest.dev",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true,
+      release_status: "completed"
+    )
+  end
+
+  desc "Build and deploy staging flavor to Play Store"
+  lane :deploy_staging do
+    json_key_path = ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json"
+    json_key_content = File.read(json_key_path) if File.exist?(json_key_path)
+    
+    if json_key_content.nil? || json_key_content.empty?
+      UI.error("JSON key file not found or empty at: #{json_key_path}")
+      UI.error("Current directory: #{Dir.pwd}")
+      UI.error("Files in current directory: #{Dir.entries('.').join(', ')}")
+    end
+    
+    upload_to_play_store(
+      aab: "app/build/outputs/bundle/stagingRelease/app-staging-release.aab",
+      track: "internal",
+      json_key: json_key_content,
+      package_name: "com.ext.flavourbasedbuildtest.staging",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true,
+      release_status: "completed"
+    )
+  end
+
   desc "Build and deploy to Play Store - Alpha Testing"
   lane :deploy_alpha do
     json_key_path = ENV["PLAY_JSON_KEY_PATH"] || "play-store-service-account.json"

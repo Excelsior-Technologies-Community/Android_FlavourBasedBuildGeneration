@@ -131,6 +131,28 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Build AAB (Dev)
+        env:
+          KEYSTORE_PATH: "your_keystore.jks"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_CODE: ${{ steps.version.outputs.VERSION_CODE }}
+          VERSION_NAME: ${{ steps.version.outputs.VERSION_NAME }}
+        run: |
+          ./gradlew bundleDevRelease --stacktrace
+
+      - name: Build AAB (Staging)
+        env:
+          KEYSTORE_PATH: "your_keystore.jks"
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_CODE: ${{ steps.version.outputs.VERSION_CODE }}
+          VERSION_NAME: ${{ steps.version.outputs.VERSION_NAME }}
+        run: |
+          ./gradlew bundleStagingRelease --stacktrace
+
       - name: Build AAB (Production)
         env:
           KEYSTORE_PATH: "your_keystore.jks"
@@ -142,26 +164,45 @@ jobs:
         run: |
           ./gradlew bundleProdRelease --stacktrace
 
-      - name: Verify AAB exists
+      - name: Verify AABs exist
         run: |
-          AAB_PATH="app/build/outputs/bundle/prodRelease/app-prod-release.aab"
-          if [ ! -f "$AAB_PATH" ]; then
-            echo "Error: AAB file not found at $AAB_PATH"
-            exit 1
-          fi
-          echo "AAB file found successfully"
-          ls -lh "$AAB_PATH"
+          for flavor in dev staging prod; do
+            AAB_PATH="app/build/outputs/bundle/${flavor}Release/app-${flavor}-release.aab"
+            if [ ! -f "$AAB_PATH" ]; then
+              echo "Error: AAB file not found at $AAB_PATH"
+              exit 1
+            fi
+            echo "AAB file found successfully: $AAB_PATH"
+            ls -lh "$AAB_PATH"
+          done
 
-      - name: Upload AAB as artifact
+      - name: Upload AABs as artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-prod-release-${{ steps.version.outputs.VERSION_CODE }}
-          path: app/build/outputs/bundle/prodRelease/app-prod-release.aab
+          name: app-release-${{ steps.version.outputs.VERSION_CODE }}
+          path: |
+            app/build/outputs/bundle/devRelease/app-dev-release.aab
+            app/build/outputs/bundle/stagingRelease/app-staging-release.aab
+            app/build/outputs/bundle/prodRelease/app-prod-release.aab
           retention-days: 30
 
-      - name: Deploy to Play Store
+      - name: Deploy Dev to Play Store
         env:
-          PLAY_JSON_KEY_PATH: "play-store-service-account.json"
+          PLAY_JSON_KEY_PATH: "fastlane/play-store-service-account.json"
+        run: |
+          cd fastlane
+          fastlane deploy_dev
+
+      - name: Deploy Staging to Play Store
+        env:
+          PLAY_JSON_KEY_PATH: "fastlane/play-store-service-account.json"
+        run: |
+          cd fastlane
+          fastlane deploy_staging
+
+      - name: Deploy Production to Play Store
+        env:
+          PLAY_JSON_KEY_PATH: "fastlane/play-store-service-account.json"
           CHANGELOG: ${{ github.event.inputs.changelog || 'Automated release from CI/CD pipeline' }}
           ROLLOUT_PERCENT: ${{ github.event.inputs.rollout || '1.0' }}
         run: |
