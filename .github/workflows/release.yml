@@ -4,6 +4,10 @@ permissions:
   contents: write
 
 on:
+  push:
+    branches:
+      - main
+      - test
   workflow_dispatch:
     inputs:
       track:
