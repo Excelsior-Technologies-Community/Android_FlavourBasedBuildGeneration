@@ -32,8 +32,8 @@ platform :android do
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      release_status: "completed",
-      changelog: ENV["CHANGELOG"] || "Automated release from CI/CD pipeline"
+      skip_upload_changelogs: true,
+      release_status: "completed"
     )
   end
 
@@ -43,15 +43,15 @@ platform :android do
     json_key_content = File.read(json_key_path) if File.exist?(json_key_path)
     
     upload_to_play_store(
-      aab: "../app/build/outputs/bundle/prodRelease/app-prod-release.aab",
+      aab: "app/build/outputs/bundle/prodRelease/app-prod-release.aab",
       track: "beta",
       json_key: json_key_content,
       package_name: "com.ext.flavourbasedbuildtest",
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      release_status: "completed",
-      changelog: ENV["CHANGELOG"] || "Automated release from CI/CD pipeline"
+      skip_upload_changelogs: true,
+      release_status: "completed"
     )
   end
 
