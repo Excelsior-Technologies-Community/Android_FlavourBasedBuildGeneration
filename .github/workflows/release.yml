@@ -170,6 +170,39 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
 
+      - name: Generate Error Summary
+        if: always()
+        run: |
+          echo "## 📊 ERROR SUMMARY REPORT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Unit Test Results" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/test-results" ]; then
+            echo "✅ Unit test reports available" >> $GITHUB_STEP_SUMMARY
+            find app/build/test-results -name "*.xml" -exec echo "- {}" \; >> $GITHUB_STEP_SUMMARY || true
+          else
+            echo "❌ No unit test results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Detekt Results" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/reports/detekt" ]; then
+            echo "✅ Detekt reports available" >> $GITHUB_STEP_SUMMARY
+            find app/build/reports/detekt -name "*.html" -o -name "*.xml" | head -20 >> $GITHUB_STEP_SUMMARY || true
+          else
+            echo "❌ No Detekt results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Lint Results" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/reports/lint-results" ]; then
+            echo "✅ Lint reports available" >> $GITHUB_STEP_SUMMARY
+            find app/build/reports/lint-results -name "*.html" -o -name "*.xml" | head -20 >> $GITHUB_STEP_SUMMARY || true
+          else
+            echo "❌ No Lint results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
       - name: Run Instrumented Tests
         continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
@@ -189,6 +222,75 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
 
+      - name: Generate Detailed Error Report
+        if: always()
+        run: |
+          echo "## 📋 DETAILED ERROR REPORT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Unit Test Failures
+          echo "### ❌ Unit Test Failures" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/test-results" ]; then
+            for file in app/build/test-results/**/*.xml; do
+              if [ -f "$file" ]; then
+                echo "#### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo '```xml' >> $GITHUB_STEP_SUMMARY
+                cat "$file" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "No unit test failures found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Detekt Issues
+          echo "### 🔍 Detekt Issues" >> $GITHUB_STEP_SUMMARY
+          if [ -f "app/build/reports/detekt/detekt.xml" ]; then
+            echo "#### Detekt XML Report" >> $GITHUB_STEP_SUMMARY
+            echo '```xml' >> $GITHUB_STEP_SUMMARY
+            cat app/build/reports/detekt/detekt.xml >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Detekt XML report found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Lint Issues
+          echo "### 🧹 Lint Issues" >> $GITHUB_STEP_SUMMARY
+          if [ -f "app/build/reports/lint-results-devDebug.xml" ]; then
+            echo "#### Lint XML Report (devDebug)" >> $GITHUB_STEP_SUMMARY
+            echo '```xml' >> $GITHUB_STEP_SUMMARY
+            cat app/build/reports/lint-results-devDebug.xml >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          elif [ -f "app/build/reports/lint-results.xml" ]; then
+            echo "#### Lint XML Report" >> $GITHUB_STEP_SUMMARY
+            echo '```xml' >> $GITHUB_STEP_SUMMARY
+            cat app/build/reports/lint-results.xml >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Lint XML report found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Instrumented Test Failures
+          echo "### 📱 Instrumented Test Failures" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/reports/androidTests" ]; then
+            for file in app/build/reports/androidTests/**/*.xml; do
+              if [ -f "$file" ]; then
+                echo "#### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo '```xml' >> $GITHUB_STEP_SUMMARY
+                cat "$file" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "No instrumented test failures found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
       - name: Run UI Tests
         continue-on-error: true
         run: ./gradlew connectedDevDebugAndroidTest connectedStagingDebugAndroidTest connectedProdDebugAndroidTest || true
@@ -202,6 +304,25 @@ jobs:
             app/build/reports/androidTests
           retention-days: 30
           if-no-files-found: warn
+
+      - name: Generate UI Test Error Report
+        if: always()
+        run: |
+          echo "## 📱 UI Test Failures" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/reports/androidTests" ]; then
+            for file in app/build/reports/androidTests/**/*.xml; do
+              if [ -f "$file" ]; then
+                echo "#### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo '```xml' >> $GITHUB_STEP_SUMMARY
+                cat "$file" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "No UI test failures found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Crash Reports
         run: |
