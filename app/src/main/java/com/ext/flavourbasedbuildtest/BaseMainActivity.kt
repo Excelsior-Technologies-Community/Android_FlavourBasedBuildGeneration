@@ -55,9 +55,6 @@ open class BaseMainActivity : AppCompatActivity() {
         Log.d("MainActivity1", "API Timeout: ${FlavorConfig.getApiTimeout()}ms")
         Log.d("MainActivity1", "Debug Enabled: ${FlavorConfig.isDebugEnabled()}")
         Log.d("MainActivity1", "Log Level: ${FlavorConfig.getLogLevel()}")
-        
-        // INTENTIONAL ERROR: Undefined variable to test CI/CD error reporting
-        val undefinedVariable = thisDoesNotExist
 
         // Network configuration
         Log.d("MainActivity1", "Connectivity Timeout: ${NetworkConfig.getConnectivityTimeout()}ms")

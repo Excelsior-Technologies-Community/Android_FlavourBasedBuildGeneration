@@ -54,4 +54,10 @@ class MainActivityUiTest {
             assertTrue("Activity should be resumed", !activity.isDestroyed)
         }
     }
+
+    @Test
+    fun testIntentionalError() {
+        // INTENTIONAL ERROR: This test will fail to verify CI/CD error reporting
+        assertTrue("This should always fail", false)
+    }
 }
