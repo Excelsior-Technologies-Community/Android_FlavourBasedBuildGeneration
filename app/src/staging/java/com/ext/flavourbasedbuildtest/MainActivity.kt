@@ -112,10 +112,4 @@ class MainActivity : BaseMainActivity() {
             }
             .show()
     }
-
-    // INTENTIONAL CRASH METHOD FOR TESTING
-    fun triggerIntentionalCrash() {
-        // This method is called by UI tests to verify crash detection
-        throw RuntimeException("STAGING FLAVOR CRASH: Intentional crash in Staging MainActivity for CI/CD testing")
-    }
 }

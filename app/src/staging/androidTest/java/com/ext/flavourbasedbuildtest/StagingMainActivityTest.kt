@@ -36,12 +36,4 @@ class StagingMainActivityTest {
             assertNotNull("Integration tests text should exist", activity.binding.integrationTestsText)
         }
     }
-
-    @Test
-    fun testStagingIntentionalCrash() {
-        // INTENTIONAL CRASH: Call crash method in Staging MainActivity to verify crash detection
-        activityRule.scenario.onActivity { activity ->
-            activity.triggerIntentionalCrash()
-        }
-    }
 }

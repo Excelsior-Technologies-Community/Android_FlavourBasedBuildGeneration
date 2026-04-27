@@ -36,12 +36,4 @@ class DevMainActivityTest {
             assertNotNull("Clear cache button should exist", activity.binding.clearCacheButton)
         }
     }
-
-    @Test
-    fun testDevIntentionalCrash() {
-        // INTENTIONAL CRASH: Call crash method in Dev MainActivity to verify crash detection
-        activityRule.scenario.onActivity { activity ->
-            activity.triggerIntentionalCrash()
-        }
-    }
 }

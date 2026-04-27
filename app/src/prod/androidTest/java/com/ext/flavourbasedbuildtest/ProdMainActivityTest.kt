@@ -36,12 +36,4 @@ class ProdMainActivityTest {
             assertNotNull("Revenue text should exist", activity.binding.revenueText)
         }
     }
-
-    @Test
-    fun testProdIntentionalCrash() {
-        // INTENTIONAL CRASH: Call crash method in Prod MainActivity to verify crash detection
-        activityRule.scenario.onActivity { activity ->
-            activity.triggerIntentionalCrash()
-        }
-    }
 }
