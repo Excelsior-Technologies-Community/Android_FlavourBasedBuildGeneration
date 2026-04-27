@@ -1,12 +1,14 @@
 package com.ext.flavourbasedbuildtest
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
 
 /**
  * Functional tests for flavor-specific configurations
@@ -15,13 +17,14 @@ import org.junit.Assert.*
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class FlavorConfigurationTest {
-
     @Test
     fun testPackageNameStartsWithBase() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         val packageName = appContext.packageName
-        assertTrue("Package name should start with base package", 
-            packageName.startsWith("com.ext.flavourbasedbuildtest"))
+        assertTrue(
+            "Package name should start with base package",
+            packageName.startsWith("com.ext.flavourbasedbuildtest"),
+        )
     }
 
     @Test
@@ -42,16 +45,20 @@ class FlavorConfigurationTest {
     fun testBuildConfigFlavorExists() {
         val flavor = BuildConfig.FLAVOR
         assertNotNull("FLAVOR should not be null", flavor)
-        assertTrue("FLAVOR should be one of dev, staging, or prod", 
-            flavor in listOf("dev", "staging", "prod"))
+        assertTrue(
+            "FLAVOR should be one of dev, staging, or prod",
+            flavor in listOf("dev", "staging", "prod"),
+        )
     }
 
     @Test
     fun testBuildConfigBuildTypeExists() {
         val buildType = BuildConfig.BUILD_TYPE
         assertNotNull("BUILD_TYPE should not be null", buildType)
-        assertTrue("BUILD_TYPE should be debug or release", 
-            buildType in listOf("debug", "release"))
+        assertTrue(
+            "BUILD_TYPE should be debug or release",
+            buildType in listOf("debug", "release"),
+        )
     }
 
     @Test
@@ -84,8 +91,10 @@ class FlavorConfigurationTest {
         assertTrue("API timeout should be positive", apiTimeout > 0)
         assertNotNull("Debug enabled should not be null", debugEnabled)
         assertNotNull("Log level should not be null", logLevel)
-        assertTrue("Log level should be valid", 
-            logLevel in listOf("VERBOSE", "DEBUG", "INFO", "WARN", "ERROR"))
+        assertTrue(
+            "Log level should be valid",
+            logLevel in listOf("VERBOSE", "DEBUG", "INFO", "WARN", "ERROR"),
+        )
     }
 
     @Test

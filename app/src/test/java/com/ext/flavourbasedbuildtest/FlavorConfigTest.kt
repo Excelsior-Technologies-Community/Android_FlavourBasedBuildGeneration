@@ -1,7 +1,10 @@
 package com.ext.flavourbasedbuildtest
 
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.junit.Assert.*
 
 /**
  * Function-wise unit tests for FlavorConfig
@@ -9,9 +12,8 @@ import org.junit.Assert.*
  * based on which build variant is being tested
  */
 class FlavorConfigTest {
-
     // ========== getFlavorName() Tests ==========
-    
+
     @Test
     fun testGetFlavorName_FunctionExists() {
         val flavorName = FlavorConfig.getFlavorName()
@@ -28,22 +30,28 @@ class FlavorConfigTest {
     fun testGetFlavorName_ReturnsValidFlavorName() {
         val flavorName = FlavorConfig.getFlavorName()
         val validNames = listOf("Development", "Staging", "Production")
-        assertTrue("getFlavorName() should return valid flavor name", 
-            flavorName in validNames)
+        assertTrue(
+            "getFlavorName() should return valid flavor name",
+            flavorName in validNames,
+        )
     }
 
     @Test
     fun testGetFlavorName_StartsWithUppercase() {
         val flavorName = FlavorConfig.getFlavorName()
-        assertTrue("getFlavorName() should start with uppercase letter", 
-            flavorName[0].isUpperCase())
+        assertTrue(
+            "getFlavorName() should start with uppercase letter",
+            flavorName[0].isUpperCase(),
+        )
     }
 
     @Test
     fun testGetFlavorName_NoSpaces() {
         val flavorName = FlavorConfig.getFlavorName()
-        assertFalse("getFlavorName() should not contain spaces", 
-            flavorName.contains(" "))
+        assertFalse(
+            "getFlavorName() should not contain spaces",
+            flavorName.contains(" "),
+        )
     }
 
     // ========== getApiTimeout() Tests ==========
@@ -96,13 +104,17 @@ class FlavorConfigTest {
     fun testIsDebugEnabled_ConsistentWithLogLevel() {
         val debugEnabled = FlavorConfig.isDebugEnabled()
         val logLevel = FlavorConfig.getLogLevel()
-        
+
         if (debugEnabled) {
-            assertTrue("When debug enabled, log level should be VERBOSE or DEBUG", 
-                logLevel in listOf("VERBOSE", "DEBUG"))
+            assertTrue(
+                "When debug enabled, log level should be VERBOSE or DEBUG",
+                logLevel in listOf("VERBOSE", "DEBUG"),
+            )
         } else {
-            assertTrue("When debug disabled, log level should be INFO, WARN, or ERROR", 
-                logLevel in listOf("INFO", "WARN", "ERROR"))
+            assertTrue(
+                "When debug disabled, log level should be INFO, WARN, or ERROR",
+                logLevel in listOf("INFO", "WARN", "ERROR"),
+            )
         }
     }
 
@@ -124,15 +136,20 @@ class FlavorConfigTest {
     fun testGetLogLevel_ReturnsValidLogLevel() {
         val logLevel = FlavorConfig.getLogLevel()
         val validLogLevels = listOf("VERBOSE", "DEBUG", "INFO", "WARN", "ERROR")
-        assertTrue("getLogLevel() should return valid log level", 
-            logLevel in validLogLevels)
+        assertTrue(
+            "getLogLevel() should return valid log level",
+            logLevel in validLogLevels,
+        )
     }
 
     @Test
     fun testGetLogLevel_AllUppercase() {
         val logLevel = FlavorConfig.getLogLevel()
-        assertEquals("getLogLevel() should return uppercase string", 
-            logLevel, logLevel.uppercase())
+        assertEquals(
+            "getLogLevel() should return uppercase string",
+            logLevel,
+            logLevel.uppercase(),
+        )
     }
 
     // ========== Cross-Function Consistency Tests ==========
@@ -159,7 +176,7 @@ class FlavorConfigTest {
     @Test
     fun testFlavorSpecificConfiguration() {
         val flavorName = FlavorConfig.getFlavorName()
-        
+
         when (flavorName) {
             "Development" -> {
                 assertEquals("Dev should have 30s timeout", 30000L, FlavorConfig.getApiTimeout())

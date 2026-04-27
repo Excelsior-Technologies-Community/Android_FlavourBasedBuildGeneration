@@ -3,11 +3,12 @@ package com.ext.flavourbasedbuildtest
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
 
 /**
  * UI Tests for MainActivity using Espresso
@@ -15,7 +16,6 @@ import org.junit.Assert.*
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class MainActivityUiTest {
-
     @get:Rule
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
 

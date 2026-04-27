@@ -1,7 +1,9 @@
 package com.ext.flavourbasedbuildtest
 
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.junit.Assert.*
 
 /**
  * Function-wise unit tests for NetworkConfig
@@ -9,7 +11,6 @@ import org.junit.Assert.*
  * based on which build variant is being tested
  */
 class NetworkConfigTest {
-
     // ========== getConnectivityTimeout() Tests ==========
 
     @Test
@@ -124,7 +125,7 @@ class NetworkConfigTest {
     fun testShouldRetryOnFailure_ConsistentWithMaxRetries() {
         val retryOnFailure = NetworkConfig.shouldRetryOnFailure()
         val maxRetries = NetworkConfig.getMaxRetries()
-        
+
         if (retryOnFailure) {
             assertTrue("When retry enabled, max retries should be > 0", maxRetries > 0)
         } else {
@@ -165,7 +166,7 @@ class NetworkConfigTest {
         val connectivity = NetworkConfig.getConnectivityTimeout()
         val read = NetworkConfig.getReadTimeout()
         val write = NetworkConfig.getWriteTimeout()
-        
+
         assertEquals("All timeout functions should return same value", connectivity, read)
         assertEquals("All timeout functions should return same value", read, write)
     }

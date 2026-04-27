@@ -2,12 +2,10 @@ package com.ext.flavourbasedbuildtest
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.ext.flavourbasedbuildtest.databinding.ActivityMainBinding
 
 class MainActivity : BaseMainActivity() {
     private val testLogs = mutableListOf<String>()
@@ -33,18 +31,18 @@ class MainActivity : BaseMainActivity() {
             testLogs.add("=== Test Execution Started ===")
             testLogs.add("Timestamp: ${System.currentTimeMillis()}")
             Toast.makeText(this, "Running Test Suite...", Toast.LENGTH_SHORT).show()
-            
+
             // Simulate test execution
             runTestsButton.isEnabled = false
             runTestsButton.text = "Running..."
-            
+
             runTestsButton.postDelayed({
                 testLogs.add("Unit Tests: 142 passed, 3 failed")
                 testLogs.add("Integration Tests: 58 passed, 0 failed")
                 testLogs.add("Performance Tests: 8 pending")
                 testLogs.add("Total: 200 tests, 200 passed, 3 failed")
                 testLogs.add("=== Test Execution Completed ===")
-                
+
                 unitTestsText.text = "145"
                 integrationTestsText.text = "60"
                 pendingTestsText.text = "8"
@@ -52,7 +50,7 @@ class MainActivity : BaseMainActivity() {
                 runTestsButton.isEnabled = true
                 runTestsButton.text = "Run Tests"
                 Toast.makeText(this, "Tests Completed: 205 Passed", Toast.LENGTH_SHORT).show()
-                
+
                 // Show test results dialog
                 showTestResults()
             }, 2000)
@@ -65,7 +63,8 @@ class MainActivity : BaseMainActivity() {
     }
 
     private fun showTestResults() {
-        val results = """
+        val results =
+            """
             Test Results Summary
             ====================
             Unit Tests: 145/145 Passed
@@ -75,7 +74,7 @@ class MainActivity : BaseMainActivity() {
             
             Duration: 2.0s
             Status: SUCCESS
-        """.trimIndent()
+            """.trimIndent()
 
         MaterialAlertDialogBuilder(this)
             .setTitle("Test Results")
@@ -85,19 +84,21 @@ class MainActivity : BaseMainActivity() {
     }
 
     private fun showLogsDialog() {
-        val logsText = if (testLogs.isEmpty()) {
-            "No test logs available. Run tests first."
-        } else {
-            testLogs.joinToString("\n")
-        }
+        val logsText =
+            if (testLogs.isEmpty()) {
+                "No test logs available. Run tests first."
+            } else {
+                testLogs.joinToString("\n")
+            }
 
         val scrollView = ScrollView(this)
-        val textView = TextView(this).apply {
-            text = logsText
-            setPadding(40, 20, 40, 20)
-            textSize = 12f
-            setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
-        }
+        val textView =
+            TextView(this).apply {
+                text = logsText
+                setPadding(40, 20, 40, 20)
+                textSize = 12f
+                setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+            }
         scrollView.addView(textView)
 
         MaterialAlertDialogBuilder(this)

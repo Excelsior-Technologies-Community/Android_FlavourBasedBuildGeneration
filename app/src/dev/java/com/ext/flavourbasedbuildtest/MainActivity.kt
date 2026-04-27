@@ -4,11 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
-import com.ext.flavourbasedbuildtest.databinding.ActivityMainBinding
 
 class MainActivity : BaseMainActivity() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -57,7 +54,7 @@ class MainActivity : BaseMainActivity() {
             Log.d("DevUI", "Testing API Connection")
             connectionStatus.text = "Testing..."
             connectionStatus.setTextColor(getColor(android.R.color.darker_gray))
-            
+
             // Simulate API test
             connectionStatus.postDelayed({
                 connectionStatus.text = "Connected"
@@ -79,28 +76,30 @@ class MainActivity : BaseMainActivity() {
         val activityManager = getSystemService(android.content.Context.ACTIVITY_SERVICE) as android.app.ActivityManager
         val runtime = Runtime.getRuntime()
 
-        val runnable = object : Runnable {
-            override fun run() {
-                // Get JVM memory info
-                val usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024)
-                val maxMemory = runtime.maxMemory() / (1024 * 1024)
-                val totalMemory = runtime.totalMemory() / (1024 * 1024)
+        val runnable =
+            object : Runnable {
+                override fun run() {
+                    // Get JVM memory info
+                    val usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024)
+                    val maxMemory = runtime.maxMemory() / (1024 * 1024)
+                    val totalMemory = runtime.totalMemory() / (1024 * 1024)
 
-                // Get device memory info
-                val memoryInfo = android.app.ActivityManager.MemoryInfo()
-                activityManager.getMemoryInfo(memoryInfo)
-                val totalDeviceMemory = memoryInfo.totalMem / (1024 * 1024)
-                val availableDeviceMemory = memoryInfo.availMem / (1024 * 1024)
-                val usedDeviceMemory = totalDeviceMemory - availableDeviceMemory
+                    // Get device memory info
+                    val memoryInfo = android.app.ActivityManager.MemoryInfo()
+                    activityManager.getMemoryInfo(memoryInfo)
+                    val totalDeviceMemory = memoryInfo.totalMem / (1024 * 1024)
+                    val availableDeviceMemory = memoryInfo.availMem / (1024 * 1024)
+                    val usedDeviceMemory = totalDeviceMemory - availableDeviceMemory
 
-                memoryUsageText.text = """
-                    App Memory: $usedMemory MB / $maxMemory MB (Allocated: $totalMemory MB)
-                    Device Memory: $usedDeviceMemory MB / $totalDeviceMemory MB (Available: $availableDeviceMemory MB)
-                """.trimIndent()
+                    memoryUsageText.text =
+                        """
+                        App Memory: $usedMemory MB / $maxMemory MB (Allocated: $totalMemory MB)
+                        Device Memory: $usedDeviceMemory MB / $totalDeviceMemory MB (Available: $availableDeviceMemory MB)
+                        """.trimIndent()
 
-                handler.postDelayed(this, 1000) // Update every second
+                    handler.postDelayed(this, 1000) // Update every second
+                }
             }
-        }
         handler.post(runnable)
     }
 

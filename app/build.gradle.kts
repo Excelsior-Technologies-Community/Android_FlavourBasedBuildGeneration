@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.detekt)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -18,7 +19,7 @@ android {
         // Auto versioning: Use CI version code or read from .version/.versioncode files for local builds
         val ciVersionCode = System.getenv("VERSION_CODE")?.toIntOrNull()
         val ciVersionName = System.getenv("VERSION_NAME")
-        
+
         if (ciVersionCode != null && ciVersionName != null) {
             versionCode = ciVersionCode
             versionName = ciVersionName
@@ -26,18 +27,20 @@ android {
             // Local build: read from version files or use defaults
             val versionFile = File(projectDir, ".version")
             val versionCodeFile = File(projectDir, ".versioncode")
-            
-            versionName = if (versionFile.exists()) {
-                versionFile.readText().trim()
-            } else {
-                "1.0.0"
-            }
-            
-            versionCode = if (versionCodeFile.exists()) {
-                versionCodeFile.readText().trim().toIntOrNull() ?: 1
-            } else {
-                1
-            }
+
+            versionName =
+                if (versionFile.exists()) {
+                    versionFile.readText().trim()
+                } else {
+                    "1.0.0"
+                }
+
+            versionCode =
+                if (versionCodeFile.exists()) {
+                    versionCodeFile.readText().trim().toIntOrNull() ?: 1
+                } else {
+                    1
+                }
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -110,7 +113,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             signingConfig = signingConfigs.getByName("release")
         }
