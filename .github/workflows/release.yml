@@ -134,9 +134,6 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew test
 
-      - name: Auto-fix KtLint Formatting
-        run: ./gradlew ktlintFormat || true
-
       - name: Run Detekt (Static Analysis)
         run: ./gradlew detekt
 
