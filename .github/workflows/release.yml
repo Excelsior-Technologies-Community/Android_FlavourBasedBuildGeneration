@@ -203,14 +203,32 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
 
-      - name: Run Instrumented Tests
+      - name: Run Instrumented Tests - Dev Flavor
         continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 33
           target: default
           arch: x86_64
-          script: ./gradlew connectedDevDebugAndroidTest connectedStagingDebugAndroidTest connectedProdDebugAndroidTest || true
+          script: ./gradlew connectedDevDebugAndroidTest || true
+
+      - name: Run Instrumented Tests - Staging Flavor
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          script: ./gradlew connectedStagingDebugAndroidTest || true
+
+      - name: Run Instrumented Tests - Prod Flavor
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          script: ./gradlew connectedProdDebugAndroidTest || true
 
       - name: Upload Instrumented Test Reports
         if: always()
@@ -324,28 +342,34 @@ jobs:
           
           # Instrumented Test Failures
           echo "### 📱 Instrumented Test Failures" >> $GITHUB_STEP_SUMMARY
-          if [ -d "app/build/reports/androidTests" ]; then
-            echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
-            echo "Instrumented tests run on Android device/emulator. Key information:" >> $GITHUB_STEP_SUMMARY
-            echo "- **testcase**: Test class and method name" >> $GITHUB_STEP_SUMMARY
-            echo "- **failure**: Assertion that failed" >> $GITHUB_STEP_SUMMARY
-            echo "- **stacktrace**: Full error stack trace" >> $GITHUB_STEP_SUMMARY
-            echo "- **message**: Human-readable error message" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
-            echo "- Check the test assertion logic" >> $GITHUB_STEP_SUMMARY
-            echo "- Verify UI elements exist and are accessible" >> $GITHUB_STEP_SUMMARY
-            echo "- Ensure proper test setup and teardown" >> $GITHUB_STEP_SUMMARY
-            echo "- Review activity lifecycle in tests" >> $GITHUB_STEP_SUMMARY
-            echo "- Check for proper Espresso view interactions" >> $GITHUB_STEP_SUMMARY
-            echo "- Verify test runs on correct API level" >> $GITHUB_STEP_SUMMARY
-            echo "- Check flavor-specific configurations" >> $GITHUB_STEP_SUMMARY
-            echo "- If intentional error (like testIntentionalError), remove the test" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "#### 📄 Detailed Error Reports:" >> $GITHUB_STEP_SUMMARY
-            for file in app/build/reports/androidTests/**/*.xml; do
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
+          echo "Instrumented tests run on Android device/emulator. Key information:" >> $GITHUB_STEP_SUMMARY
+          echo "- **testcase**: Test class and method name" >> $GITHUB_STEP_SUMMARY
+          echo "- **failure**: Assertion that failed" >> $GITHUB_STEP_SUMMARY
+          echo "- **stacktrace**: Full error stack trace" >> $GITHUB_STEP_SUMMARY
+          echo "- **message**: Human-readable error message" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
+          echo "- Check the test assertion logic" >> $GITHUB_STEP_SUMMARY
+          echo "- Verify UI elements exist and are accessible" >> $GITHUB_STEP_SUMMARY
+          echo "- Ensure proper test setup and teardown" >> $GITHUB_STEP_SUMMARY
+          echo "- Review activity lifecycle in tests" >> $GITHUB_STEP_SUMMARY
+          echo "- Check for proper Espresso view interactions" >> $GITHUB_STEP_SUMMARY
+          echo "- Verify test runs on correct API level" >> $GITHUB_STEP_SUMMARY
+          echo "- Check flavor-specific configurations" >> $GITHUB_STEP_SUMMARY
+          echo "- If intentional error (like testIntentionalError), remove the test" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Dev Flavor
+          echo "<details><summary>🔵 Dev Flavor Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/reports/androidTests/connected/dev/debug" ]; then
+            echo "##### 📄 Dev Flavor Test Reports:" >> $GITHUB_STEP_SUMMARY
+            for file in app/build/reports/androidTests/connected/dev/debug/**/*.xml; do
               if [ -f "$file" ]; then
-                echo "##### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo "###### File: $file" >> $GITHUB_STEP_SUMMARY
                 echo '```xml' >> $GITHUB_STEP_SUMMARY
                 head -100 "$file" >> $GITHUB_STEP_SUMMARY
                 echo '```' >> $GITHUB_STEP_SUMMARY
@@ -353,13 +377,62 @@ jobs:
               fi
             done
           else
-            echo "No instrumented test failures found" >> $GITHUB_STEP_SUMMARY
+            echo "No Dev flavor test results found" >> $GITHUB_STEP_SUMMARY
           fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Staging Flavor
+          echo "<details><summary>🟡 Staging Flavor Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/reports/androidTests/connected/staging/debug" ]; then
+            echo "##### 📄 Staging Flavor Test Reports:" >> $GITHUB_STEP_SUMMARY
+            for file in app/build/reports/androidTests/connected/staging/debug/**/*.xml; do
+              if [ -f "$file" ]; then
+                echo "###### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo '```xml' >> $GITHUB_STEP_SUMMARY
+                head -100 "$file" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "No Staging flavor test results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Prod Flavor
+          echo "<details><summary>🔴 Prod Flavor Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/reports/androidTests/connected/prod/debug" ]; then
+            echo "##### 📄 Prod Flavor Test Reports:" >> $GITHUB_STEP_SUMMARY
+            for file in app/build/reports/androidTests/connected/prod/debug/**/*.xml; do
+              if [ -f "$file" ]; then
+                echo "###### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo '```xml' >> $GITHUB_STEP_SUMMARY
+                head -100 "$file" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "No Prod flavor test results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-      - name: Run UI Tests
+      - name: Run UI Tests - Dev Flavor
         continue-on-error: true
-        run: ./gradlew connectedDevDebugAndroidTest connectedStagingDebugAndroidTest connectedProdDebugAndroidTest || true
+        run: ./gradlew connectedDevDebugAndroidTest || true
+
+      - name: Run UI Tests - Staging Flavor
+        continue-on-error: true
+        run: ./gradlew connectedStagingDebugAndroidTest || true
+
+      - name: Run UI Tests - Prod Flavor
+        continue-on-error: true
+        run: ./gradlew connectedProdDebugAndroidTest || true
 
       - name: Upload UI Test Reports
         if: always()
@@ -375,34 +448,81 @@ jobs:
         if: always()
         run: |
           echo "## 📱 UI Test Failures" >> $GITHUB_STEP_SUMMARY
-          if [ -d "app/build/reports/androidTests" ]; then
-            for file in app/build/reports/androidTests/**/*.xml; do
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
+          echo "UI tests verify app UI components and interactions. Key information:" >> $GITHUB_STEP_SUMMARY
+          echo "- **testcase**: Test class and method name" >> $GITHUB_STEP_SUMMARY
+          echo "- **failure**: UI assertion that failed" >> $GITHUB_STEP_SUMMARY
+          echo "- **stacktrace**: Full error stack trace" >> $GITHUB_STEP_SUMMARY
+          echo "- **message**: Human-readable error message" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
+          echo "- Check if UI elements exist in the layout" >> $GITHUB_STEP_SUMMARY
+          echo "- Verify element IDs match test expectations" >> $GITHUB_STEP_SUMMARY
+          echo "- Ensure proper Espresso view interactions" >> $GITHUB_STEP_SUMMARY
+          echo "- Check activity/view state during test" >> $GITHUB_STEP_SUMMARY
+          echo "- If intentional error (like testIntentionalError), remove the test" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Dev Flavor
+          echo "<details><summary>🔵 Dev Flavor UI Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/reports/androidTests/connected/dev/debug" ]; then
+            echo "##### 📄 Dev Flavor UI Test Reports:" >> $GITHUB_STEP_SUMMARY
+            for file in app/build/reports/androidTests/connected/dev/debug/**/*.xml; do
               if [ -f "$file" ]; then
-                echo "#### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo "###### File: $file" >> $GITHUB_STEP_SUMMARY
                 echo '```xml' >> $GITHUB_STEP_SUMMARY
-                cat "$file" >> $GITHUB_STEP_SUMMARY
+                head -100 "$file" >> $GITHUB_STEP_SUMMARY
                 echo '```' >> $GITHUB_STEP_SUMMARY
-                echo "" >> $GITHUB_STEP_SUMMARY
-                
-                echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
-                echo "UI tests verify app UI components and interactions. Key information:" >> $GITHUB_STEP_SUMMARY
-                echo "- **testcase**: Test class and method name" >> $GITHUB_STEP_SUMMARY
-                echo "- **failure**: UI assertion that failed" >> $GITHUB_STEP_SUMMARY
-                echo "- **stacktrace**: Full error stack trace" >> $GITHUB_STEP_SUMMARY
-                echo "- **message**: Human-readable error message" >> $GITHUB_STEP_SUMMARY
-                echo "" >> $GITHUB_STEP_SUMMARY
-                echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
-                echo "- Check if UI elements exist in the layout" >> $GITHUB_STEP_SUMMARY
-                echo "- Verify element IDs match test expectations" >> $GITHUB_STEP_SUMMARY
-                echo "- Ensure proper Espresso view interactions" >> $GITHUB_STEP_SUMMARY
-                echo "- Check activity/view state during test" >> $GITHUB_STEP_SUMMARY
-                echo "- If intentional error (like testIntentionalError), remove the test" >> $GITHUB_STEP_SUMMARY
                 echo "" >> $GITHUB_STEP_SUMMARY
               fi
             done
           else
-            echo "No UI test failures found" >> $GITHUB_STEP_SUMMARY
+            echo "No Dev flavor UI test results found" >> $GITHUB_STEP_SUMMARY
           fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Staging Flavor
+          echo "<details><summary>🟡 Staging Flavor UI Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/reports/androidTests/connected/staging/debug" ]; then
+            echo "##### 📄 Staging Flavor UI Test Reports:" >> $GITHUB_STEP_SUMMARY
+            for file in app/build/reports/androidTests/connected/staging/debug/**/*.xml; do
+              if [ -f "$file" ]; then
+                echo "###### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo '```xml' >> $GITHUB_STEP_SUMMARY
+                head -100 "$file" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "No Staging flavor UI test results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Prod Flavor
+          echo "<details><summary>🔴 Prod Flavor UI Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/reports/androidTests/connected/prod/debug" ]; then
+            echo "##### 📄 Prod Flavor UI Test Reports:" >> $GITHUB_STEP_SUMMARY
+            for file in app/build/reports/androidTests/connected/prod/debug/**/*.xml; do
+              if [ -f "$file" ]; then
+                echo "###### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo '```xml' >> $GITHUB_STEP_SUMMARY
+                head -100 "$file" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "No Prod flavor UI test results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Crash Reports
