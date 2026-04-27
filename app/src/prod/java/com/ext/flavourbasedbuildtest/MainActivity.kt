@@ -208,4 +208,10 @@ class MainActivity : BaseMainActivity() {
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
             .show()
     }
+
+    // INTENTIONAL CRASH METHOD FOR TESTING
+    fun triggerIntentionalCrash() {
+        // This method is called by UI tests to verify crash detection
+        throw RuntimeException("PROD FLAVOR CRASH: Intentional crash in Prod MainActivity for CI/CD testing")
+    }
 }

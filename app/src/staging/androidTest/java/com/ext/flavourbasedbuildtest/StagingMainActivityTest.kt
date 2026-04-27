@@ -39,7 +39,9 @@ class StagingMainActivityTest {
 
     @Test
     fun testStagingIntentionalCrash() {
-        // INTENTIONAL CRASH: Staging flavor-specific crash to verify crash detection
-        throw RuntimeException("STAGING FLAVOR CRASH: This is a test crash for Staging MainActivity to verify crash detection in CI/CD")
+        // INTENTIONAL CRASH: Call crash method in Staging MainActivity to verify crash detection
+        activityRule.scenario.onActivity { activity ->
+            activity.triggerIntentionalCrash()
+        }
     }
 }

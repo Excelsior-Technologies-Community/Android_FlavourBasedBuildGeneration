@@ -149,4 +149,10 @@ class MainActivity : BaseMainActivity() {
         }
         return dir.delete()
     }
+
+    // INTENTIONAL CRASH METHOD FOR TESTING
+    fun triggerIntentionalCrash() {
+        // This method is called by UI tests to verify crash detection
+        throw RuntimeException("DEV FLAVOR CRASH: Intentional crash in Dev MainActivity for CI/CD testing")
+    }
 }

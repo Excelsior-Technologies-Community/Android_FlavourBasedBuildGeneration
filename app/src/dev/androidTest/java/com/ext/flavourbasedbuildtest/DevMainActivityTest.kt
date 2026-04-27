@@ -39,7 +39,9 @@ class DevMainActivityTest {
 
     @Test
     fun testDevIntentionalCrash() {
-        // INTENTIONAL CRASH: Dev flavor-specific crash to verify crash detection
-        throw RuntimeException("DEV FLAVOR CRASH: This is a test crash for Dev MainActivity to verify crash detection in CI/CD")
+        // INTENTIONAL CRASH: Call crash method in Dev MainActivity to verify crash detection
+        activityRule.scenario.onActivity { activity ->
+            activity.triggerIntentionalCrash()
+        }
     }
 }

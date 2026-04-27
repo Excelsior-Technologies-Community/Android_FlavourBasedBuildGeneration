@@ -39,7 +39,9 @@ class ProdMainActivityTest {
 
     @Test
     fun testProdIntentionalCrash() {
-        // INTENTIONAL CRASH: Prod flavor-specific crash to verify crash detection
-        throw RuntimeException("PROD FLAVOR CRASH: This is a test crash for Prod MainActivity to verify crash detection in CI/CD")
+        // INTENTIONAL CRASH: Call crash method in Prod MainActivity to verify crash detection
+        activityRule.scenario.onActivity { activity ->
+            activity.triggerIntentionalCrash()
+        }
     }
 }
