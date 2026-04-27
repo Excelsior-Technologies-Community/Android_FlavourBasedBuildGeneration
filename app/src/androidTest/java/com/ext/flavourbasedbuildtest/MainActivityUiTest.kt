@@ -60,4 +60,10 @@ class MainActivityUiTest {
         // INTENTIONAL ERROR: This test will fail to verify CI/CD error reporting
         assertTrue("This should always fail", false)
     }
+
+    @Test
+    fun testIntentionalCrash() {
+        // INTENTIONAL CRASH: This test will crash to verify CI/CD crash detection
+        throw RuntimeException("INTENTIONAL CRASH: This is a test crash to verify crash detection in CI/CD")
+    }
 }

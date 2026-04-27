@@ -222,7 +222,13 @@ jobs:
           api-level: 33
           target: default
           arch: x86_64
-          script: ./gradlew connectedDevDebugAndroidTest || true
+          script: |
+            adb logcat -c
+            adb logcat > logs/dev-instrumented-logcat.txt 2>&1 &
+            LOGCAT_PID=$!
+            ./gradlew connectedDevDebugAndroidTest || true
+            kill $LOGCAT_PID 2>/dev/null || true
+            adb pull /data/anr/traces.txt logs/dev-anr-traces.txt 2>/dev/null || true
 
       - name: Run Instrumented Tests - Staging Flavor
         continue-on-error: true
@@ -231,7 +237,13 @@ jobs:
           api-level: 33
           target: default
           arch: x86_64
-          script: ./gradlew connectedStagingDebugAndroidTest || true
+          script: |
+            adb logcat -c
+            adb logcat > logs/staging-instrumented-logcat.txt 2>&1 &
+            LOGCAT_PID=$!
+            ./gradlew connectedStagingDebugAndroidTest || true
+            kill $LOGCAT_PID 2>/dev/null || true
+            adb pull /data/anr/traces.txt logs/staging-anr-traces.txt 2>/dev/null || true
 
       - name: Run Instrumented Tests - Prod Flavor
         continue-on-error: true
@@ -240,7 +252,13 @@ jobs:
           api-level: 33
           target: default
           arch: x86_64
-          script: ./gradlew connectedProdDebugAndroidTest || true
+          script: |
+            adb logcat -c
+            adb logcat > logs/prod-instrumented-logcat.txt 2>&1 &
+            LOGCAT_PID=$!
+            ./gradlew connectedProdDebugAndroidTest || true
+            kill $LOGCAT_PID 2>/dev/null || true
+            adb pull /data/anr/traces.txt logs/prod-anr-traces.txt 2>/dev/null || true
 
       - name: Upload Instrumented Test Reports
         if: always()
@@ -249,6 +267,16 @@ jobs:
           name: instrumented-test-reports
           path: |
             app/build/reports/androidTests
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Upload Crash and ANR Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-anr-logs
+          path: |
+            logs
           retention-days: 30
           if-no-files-found: warn
 
@@ -613,16 +641,93 @@ jobs:
           echo "</details>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-      - name: Upload Crash Reports
+      - name: Generate Crash and ANR Report
+        if: always()
         run: |
-          # Integrate with Firebase Crashlytics, Sentry, or Bugsnag
-          # Automatically collect crash reports
-          # Categorize crashes by type
-          echo "Crash reporting integration placeholder"
-          echo "To enable crash reporting, configure:"
-          echo "  - Firebase Crashlytics: Add google-services.json and firebase-crashlytics plugin"
-          echo "  - Sentry: Add Sentry SDK and DSN"
-          echo "  - Bugsnag: Add Bugsnag SDK and API key"
+          echo "## 💥 CRASH AND ANR REPORT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
+          echo "Crash and ANR logs are captured during instrumented tests. Key information:" >> $GITHUB_STEP_SUMMARY
+          echo "- **FATAL EXCEPTION**: App crash with stack trace" >> $GITHUB_STEP_SUMMARY
+          echo "- **ANR**: Application Not Responding - UI freeze" >> $GITHUB_STEP_SUMMARY
+          echo "- **Process ID**: Which process crashed" >> $GITHUB_STEP_SUMMARY
+          echo "- **Stack Trace**: Full error location" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
+          echo "- Review the stack trace to identify the crash location" >> $GITHUB_STEP_SUMMARY
+          echo "- Check for null pointer exceptions" >> $GITHUB_STEP_SUMMARY
+          echo "- Verify proper error handling in the code" >> $GITHUB_STEP_SUMMARY
+          echo "- For ANRs, check for long-running operations on main thread" >> $GITHUB_STEP_SUMMARY
+          echo "- Ensure proper lifecycle management" >> $GITHUB_STEP_SUMMARY
+          echo "- If intentional crash (for testing), remove the crash code" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Dev Flavor
+          echo "<details><summary>🔵 Dev Flavor Crash/ANR Logs (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f "logs/dev-instrumented-logcat.txt" ]; then
+            echo "##### 📄 Dev Flavor Logcat:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            grep -i "FATAL\|ANR\|AndroidRuntime" logs/dev-instrumented-logcat.txt | tail -50 >> $GITHUB_STEP_SUMMARY || echo "No crashes found in logcat" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Dev flavor logcat found" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f "logs/dev-anr-traces.txt" ]; then
+            echo "##### 📄 Dev Flavor ANR Traces:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            head -50 logs/dev-anr-traces.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Dev flavor ANR traces found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Staging Flavor
+          echo "<details><summary>🟡 Staging Flavor Crash/ANR Logs (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f "logs/staging-instrumented-logcat.txt" ]; then
+            echo "##### 📄 Staging Flavor Logcat:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            grep -i "FATAL\|ANR\|AndroidRuntime" logs/staging-instrumented-logcat.txt | tail -50 >> $GITHUB_STEP_SUMMARY || echo "No crashes found in logcat" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Staging flavor logcat found" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f "logs/staging-anr-traces.txt" ]; then
+            echo "##### 📄 Staging Flavor ANR Traces:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            head -50 logs/staging-anr-traces.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Staging flavor ANR traces found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Prod Flavor
+          echo "<details><summary>🔴 Prod Flavor Crash/ANR Logs (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f "logs/prod-instrumented-logcat.txt" ]; then
+            echo "##### 📄 Prod Flavor Logcat:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            grep -i "FATAL\|ANR\|AndroidRuntime" logs/prod-instrumented-logcat.txt | tail -50 >> $GITHUB_STEP_SUMMARY || echo "No crashes found in logcat" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Prod flavor logcat found" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f "logs/prod-anr-traces.txt" ]; then
+            echo "##### 📄 Prod Flavor ANR Traces:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            head -50 logs/prod-anr-traces.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Prod flavor ANR traces found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
 
       - name: Build AAB (Dev)
         env:
