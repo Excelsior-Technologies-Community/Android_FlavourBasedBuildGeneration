@@ -9,9 +9,6 @@ build:
 
 config:
   validation: true
-  checks:
-    unused: true
-    experimental: false
 
 processors:
   active: true
@@ -44,7 +41,7 @@ complexity:
   ComplexInterface:
     active: true
     threshold: 10
-  ComplexMethod:
+  CyclomaticComplexMethod:
     active: true
     threshold: 15
   LabeledExpression:
@@ -134,14 +131,6 @@ exceptions:
       - RuntimeException
       - Throwable
 
-formatting:
-  active: false
-  android: false
-  autoCorrect: true
-  ParameterListWrapping:
-    active: false
-  ChainWrapping:
-    active: false
 
 naming:
   active: true
@@ -186,12 +175,6 @@ naming:
   VariableNaming:
     active: true
     variablePattern: '[a-z][A-Za-z0-9]*'
-  forbiddenClassNames:
-    - Foo
-  forbiddenFunctionNames:
-    - foo
-  forbiddenVariableNames:
-    - foo
 
 performance:
   active: true
@@ -212,10 +195,6 @@ potential-bugs:
     active: true
   Deprecation:
     active: false
-  DontDowncastCastTypes:
-    active: false
-  EqualsNullCall:
-    active: true
   EqualsWithHashCodeExist:
     active: true
   ExplicitGarbageCollectionCall:
@@ -238,10 +217,6 @@ potential-bugs:
     active: true
   MissingPackageDeclaration:
     active: false
-  NullableOnReturnValue:
-    active: false
-  RedundantElseInWhen:
-    active: true
   UnnecessaryNotNullOperator:
     active: true
   UnreachableCatchBlock:
@@ -251,8 +226,6 @@ potential-bugs:
   UnsafeCast:
     active: true
   UselessPostfixExpression:
-    active: true
-  WrongEqualsType:
     active: true
 
 style:
@@ -265,12 +238,6 @@ style:
     active: false
   DataClassShouldBeImmutable:
     active: false
-  EqualsOnSignature:
-    active: false
-  EqualsNullCall:
-    active: true
-  EqualsAlwaysReturnsTrueOrFalse:
-    active: true
   ExplicitCollectionElementAccessMethod:
     active: false
   ExplicitItLambdaParameter:
@@ -283,22 +250,16 @@ style:
     active: false
   ForbiddenMethodCall:
     active: false
-  ForbiddenPublicDataClass:
-    active: false
   ForbiddenVoid:
     active: false
   FunctionOnlyReturningConstant:
     active: true
-  LibraryCodeMustSpecifyReturnType:
-    active: false
-  LibraryEntities:
-    active: false
   LoopWithTooManyJumpStatements:
     active: true
     maxJumpCount: 1
   MagicNumber:
     active: false
-  MandatoryBracesIfStatements:
+  BracesOnIfStatements:
     active: false
   MandatoryBracesLoops:
     active: false
@@ -332,12 +293,11 @@ style:
     active: false
   RedundantHigherOrderMapUsage:
     active: true
-  RedundantVisibilityModifiersRule:
-    active: false
   ReturnCount:
     active: true
     max: 2
-    excludedFunctions: equals
+    excludedFunctions:
+      - equals
     excludeLabeled: false
     excludeReturnFromLambda: true
     excludeGuardClauses: false
