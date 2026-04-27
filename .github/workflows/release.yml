@@ -131,14 +131,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Run Unit Tests
-        run: ./gradlew test
+      - name: Run Unit Tests - Dev Flavor
+        run: ./gradlew testDevDebugUnitTest || true
+
+      - name: Run Unit Tests - Staging Flavor
+        run: ./gradlew testStagingDebugUnitTest || true
+
+      - name: Run Unit Tests - Prod Flavor
+        run: ./gradlew testProdDebugUnitTest || true
 
       - name: Run Detekt (Static Analysis)
         run: ./gradlew detekt
 
-      - name: Run Lint
-        run: ./gradlew lint
+      - name: Run Lint - Dev Flavor
+        run: ./gradlew lintDevDebug || true
+
+      - name: Run Lint - Staging Flavor
+        run: ./gradlew lintStagingDebug || true
+
+      - name: Run Lint - Prod Flavor
+        run: ./gradlew lintProdDebug || true
 
       - name: Upload Test Reports
         if: always()
@@ -248,27 +260,33 @@ jobs:
           
           # Unit Test Failures
           echo "### ❌ Unit Test Failures" >> $GITHUB_STEP_SUMMARY
-          if [ -d "app/build/test-results" ]; then
-            echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
-            echo "This XML report contains unit test results. Key information:" >> $GITHUB_STEP_SUMMARY
-            echo "- **testcase**: Individual test method that ran" >> $GITHUB_STEP_SUMMARY
-            echo "- **failure**: Test failed with assertion error" >> $GITHUB_STEP_SUMMARY
-            echo "- **error**: Test threw an exception" >> $GITHUB_STEP_SUMMARY
-            echo "- **message**: Human-readable error description" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
-            echo "- Review the assertion message to understand what failed" >> $GITHUB_STEP_SUMMARY
-            echo "- Check the test logic for incorrect assertions" >> $GITHUB_STEP_SUMMARY
-            echo "- Verify the code being tested is working correctly" >> $GITHUB_STEP_SUMMARY
-            echo "- Check for null pointer exceptions" >> $GITHUB_STEP_SUMMARY
-            echo "- Verify test data and mock objects" >> $GITHUB_STEP_SUMMARY
-            echo "- Check for proper test setup and initialization" >> $GITHUB_STEP_SUMMARY
-            echo "- If intentional test failure, remove or fix the test" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "#### 📄 Detailed Error Reports:" >> $GITHUB_STEP_SUMMARY
-            for file in app/build/test-results/**/*.xml; do
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
+          echo "This XML report contains unit test results. Key information:" >> $GITHUB_STEP_SUMMARY
+          echo "- **testcase**: Individual test method that ran" >> $GITHUB_STEP_SUMMARY
+          echo "- **failure**: Test failed with assertion error" >> $GITHUB_STEP_SUMMARY
+          echo "- **error**: Test threw an exception" >> $GITHUB_STEP_SUMMARY
+          echo "- **message**: Human-readable error description" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
+          echo "- Review the assertion message to understand what failed" >> $GITHUB_STEP_SUMMARY
+          echo "- Check the test logic for incorrect assertions" >> $GITHUB_STEP_SUMMARY
+          echo "- Verify the code being tested is working correctly" >> $GITHUB_STEP_SUMMARY
+          echo "- Check for null pointer exceptions" >> $GITHUB_STEP_SUMMARY
+          echo "- Verify test data and mock objects" >> $GITHUB_STEP_SUMMARY
+          echo "- Check for proper test setup and initialization" >> $GITHUB_STEP_SUMMARY
+          echo "- If intentional test failure, remove or fix the test" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Dev Flavor
+          echo "<details><summary>🔵 Dev Flavor Unit Test Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/test-results/testDevDebugUnitTest" ]; then
+            echo "##### 📄 Dev Flavor Test Reports:" >> $GITHUB_STEP_SUMMARY
+            for file in app/build/test-results/testDevDebugUnitTest/**/*.xml; do
               if [ -f "$file" ]; then
-                echo "##### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo "###### File: $file" >> $GITHUB_STEP_SUMMARY
                 echo '```xml' >> $GITHUB_STEP_SUMMARY
                 head -100 "$file" >> $GITHUB_STEP_SUMMARY
                 echo '```' >> $GITHUB_STEP_SUMMARY
@@ -276,8 +294,49 @@ jobs:
               fi
             done
           else
-            echo "No unit test failures found" >> $GITHUB_STEP_SUMMARY
+            echo "No Dev flavor unit test results found" >> $GITHUB_STEP_SUMMARY
           fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Staging Flavor
+          echo "<details><summary>🟡 Staging Flavor Unit Test Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/test-results/testStagingDebugUnitTest" ]; then
+            echo "##### 📄 Staging Flavor Test Reports:" >> $GITHUB_STEP_SUMMARY
+            for file in app/build/test-results/testStagingDebugUnitTest/**/*.xml; do
+              if [ -f "$file" ]; then
+                echo "###### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo '```xml' >> $GITHUB_STEP_SUMMARY
+                head -100 "$file" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "No Staging flavor unit test results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Prod Flavor
+          echo "<details><summary>🔴 Prod Flavor Unit Test Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -d "app/build/test-results/testProdDebugUnitTest" ]; then
+            echo "##### 📄 Prod Flavor Test Reports:" >> $GITHUB_STEP_SUMMARY
+            for file in app/build/test-results/testProdDebugUnitTest/**/*.xml; do
+              if [ -f "$file" ]; then
+                echo "###### File: $file" >> $GITHUB_STEP_SUMMARY
+                echo '```xml' >> $GITHUB_STEP_SUMMARY
+                head -100 "$file" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "No Prod flavor unit test results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # Detekt Issues
@@ -311,19 +370,6 @@ jobs:
           
           # Lint Issues
           echo "### 🧹 Lint Issues" >> $GITHUB_STEP_SUMMARY
-          if [ -f "app/build/reports/lint-results-devDebug.xml" ]; then
-            echo "#### Lint XML Report (devDebug)" >> $GITHUB_STEP_SUMMARY
-            echo '```xml' >> $GITHUB_STEP_SUMMARY
-            cat app/build/reports/lint-results-devDebug.xml >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-          elif [ -f "app/build/reports/lint-results.xml" ]; then
-            echo "#### Lint XML Report" >> $GITHUB_STEP_SUMMARY
-            echo '```xml' >> $GITHUB_STEP_SUMMARY
-            cat app/build/reports/lint-results.xml >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No Lint XML report found" >> $GITHUB_STEP_SUMMARY
-          fi
           echo "" >> $GITHUB_STEP_SUMMARY
           
           echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
@@ -338,6 +384,48 @@ jobs:
           echo "- Remove unused resources" >> $GITHUB_STEP_SUMMARY
           echo "- Fix manifest declarations" >> $GITHUB_STEP_SUMMARY
           echo "- Add proper permissions" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Dev Flavor
+          echo "<details><summary>🔵 Dev Flavor Lint Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f "app/build/reports/lint-results-devDebug.xml" ]; then
+            echo "##### 📄 Dev Flavor Lint Report:" >> $GITHUB_STEP_SUMMARY
+            echo '```xml' >> $GITHUB_STEP_SUMMARY
+            head -100 app/build/reports/lint-results-devDebug.xml >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Dev flavor lint results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Staging Flavor
+          echo "<details><summary>🟡 Staging Flavor Lint Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f "app/build/reports/lint-results-stagingDebug.xml" ]; then
+            echo "##### 📄 Staging Flavor Lint Report:" >> $GITHUB_STEP_SUMMARY
+            echo '```xml' >> $GITHUB_STEP_SUMMARY
+            head -100 app/build/reports/lint-results-stagingDebug.xml >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Staging flavor lint results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Prod Flavor
+          echo "<details><summary>🔴 Prod Flavor Lint Results (Click to expand)</summary>" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f "app/build/reports/lint-results-prodDebug.xml" ]; then
+            echo "##### 📄 Prod Flavor Lint Report:" >> $GITHUB_STEP_SUMMARY
+            echo '```xml' >> $GITHUB_STEP_SUMMARY
+            head -100 app/build/reports/lint-results-prodDebug.xml >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Prod flavor lint results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "</details>" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           # Instrumented Test Failures
