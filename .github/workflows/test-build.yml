@@ -133,7 +133,7 @@ jobs:
 
       - name: Run UI Tests
         continue-on-error: true
-        run: ./gradlew connectedDebugAndroidTest || true
+        run: ./gradlew connectedDevDebugAndroidTest connectedStagingDebugAndroidTest connectedProdDebugAndroidTest || true
 
       - name: Upload UI Test Reports
         if: always()
