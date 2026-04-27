@@ -1,5 +1,6 @@
 package com.ext.flavourbasedbuildtest
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowInsetsController
@@ -16,11 +17,13 @@ open class BaseMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         
-        // Set status bar to light theme (dark icons)
-        window.insetsController?.setSystemBarsAppearance(
-            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Set status bar to light theme (dark icons)
+            window.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            )
+        }
         
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

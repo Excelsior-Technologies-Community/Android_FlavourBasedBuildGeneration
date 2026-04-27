@@ -18,7 +18,6 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:forceDarkAllowed">false</item>
         <item name="colorAccent">@color/accent</item>
         <item name="android:colorBackground">@color/background</item>
         <item name="android:windowBackground">@color/background</item>
@@ -35,7 +34,6 @@
         <item name="colorPrimary">@color/dev_primary</item>
         <item name="android:colorBackground">@color/dev_background</item>
         <item name="android:windowBackground">@color/dev_background</item>
-        <item name="android:forceDarkAllowed">false</item>
     </style>
     
     <!-- Staging Theme -->
@@ -43,7 +41,6 @@
         <item name="colorPrimary">@color/staging_primary</item>
         <item name="android:colorBackground">@color/staging_background</item>
         <item name="android:windowBackground">@color/staging_background</item>
-        <item name="android:forceDarkAllowed">false</item>
     </style>
     
     <!-- Prod Theme -->
@@ -51,7 +48,6 @@
         <item name="colorPrimary">@color/prod_primary</item>
         <item name="android:colorBackground">@color/prod_background</item>
         <item name="android:windowBackground">@color/prod_background</item>
-        <item name="android:forceDarkAllowed">false</item>
     </style>
     
     <!-- Button Styles -->
