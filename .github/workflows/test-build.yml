@@ -75,6 +75,70 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Run Unit Tests
+        run: ./gradlew test
+
+      - name: Run Detekt (Static Analysis)
+        run: ./gradlew detekt
+
+      - name: Run Lint
+        run: ./gradlew lint
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            app/build/test-results
+            app/build/reports/tests
+          retention-days: 30
+
+      - name: Upload Detekt Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-reports
+          path: |
+            app/build/reports/detekt
+          retention-days: 30
+
+      - name: Upload Lint Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-reports
+          path: |
+            app/build/reports/lint
+          retention-days: 30
+
+      - name: Run Instrumented Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          script: ./gradlew connectedAndroidTest
+
+      - name: Upload Instrumented Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: instrumented-test-reports
+          path: |
+            app/build/reports/androidTests
+          retention-days: 30
+
+      - name: Run UI Tests
+        run: ./gradlew connectedDebugAndroidTest
+
+      - name: Upload UI Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-reports
+          path: |
+            app/build/reports/androidTests
+          retention-days: 30
+
       - name: Build AAB (Dev)
         env:
           KEYSTORE_PATH: "your_keystore.jks"
