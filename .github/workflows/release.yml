@@ -238,6 +238,20 @@ jobs:
                 cat "$file" >> $GITHUB_STEP_SUMMARY
                 echo '```' >> $GITHUB_STEP_SUMMARY
                 echo "" >> $GITHUB_STEP_SUMMARY
+                
+                echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
+                echo "This XML report contains unit test results. Key information:" >> $GITHUB_STEP_SUMMARY
+                echo "- **testcase**: Individual test method that ran" >> $GITHUB_STEP_SUMMARY
+                echo "- **failure**: Test failed with assertion error" >> $GITHUB_STEP_SUMMARY
+                echo "- **error**: Test threw an exception" >> $GITHUB_STEP_SUMMARY
+                echo "- **message**: Human-readable error description" >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+                echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
+                echo "- Review the assertion message to understand what failed" >> $GITHUB_STEP_SUMMARY
+                echo "- Check the test logic for incorrect assertions" >> $GITHUB_STEP_SUMMARY
+                echo "- Verify the code being tested is working correctly" >> $GITHUB_STEP_SUMMARY
+                echo "- If intentional test failure, remove or fix the test" >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
               fi
             done
           else
@@ -252,6 +266,21 @@ jobs:
             echo '```xml' >> $GITHUB_STEP_SUMMARY
             cat app/build/reports/detekt/detekt.xml >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
+            echo "Detekt reports code quality issues. Key information:" >> $GITHUB_STEP_SUMMARY
+            echo "- **rule**: Which Detekt rule was violated" >> $GITHUB_STEP_SUMMARY
+            echo "- **file**: Source file with the issue" >> $GITHUB_STEP_SUMMARY
+            echo "- **line**: Line number where issue occurs" >> $GITHUB_STEP_SUMMARY
+            echo "- **message**: Description of the code quality issue" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
+            echo "- Refactor code to follow Kotlin best practices" >> $GITHUB_STEP_SUMMARY
+            echo "- Remove unused code or imports" >> $GITHUB_STEP_SUMMARY
+            echo "- Simplify complex functions" >> $GITHUB_STEP_SUMMARY
+            echo "- Add proper documentation" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
           else
             echo "No Detekt XML report found" >> $GITHUB_STEP_SUMMARY
           fi
@@ -274,6 +303,20 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
           
+          echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
+          echo "Android Lint reports code structure and compatibility issues. Key information:" >> $GITHUB_STEP_SUMMARY
+          echo "- **issue**: Type of lint issue (e.g., NewApi, UnusedResources)" >> $GITHUB_STEP_SUMMARY
+          echo "- **location**: File and line where issue occurs" >> $GITHUB_STEP_SUMMARY
+          echo "- **message**: Description of the issue" >> $GITHUB_STEP_SUMMARY
+          echo "- **severity**: Error, Warning, or Info" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
+          echo "- Add API level checks for new APIs" >> $GITHUB_STEP_SUMMARY
+          echo "- Remove unused resources" >> $GITHUB_STEP_SUMMARY
+          echo "- Fix manifest declarations" >> $GITHUB_STEP_SUMMARY
+          echo "- Add proper permissions" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
           # Instrumented Test Failures
           echo "### 📱 Instrumented Test Failures" >> $GITHUB_STEP_SUMMARY
           if [ -d "app/build/reports/androidTests" ]; then
@@ -283,6 +326,21 @@ jobs:
                 echo '```xml' >> $GITHUB_STEP_SUMMARY
                 cat "$file" >> $GITHUB_STEP_SUMMARY
                 echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+                
+                echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
+                echo "Instrumented tests run on Android device/emulator. Key information:" >> $GITHUB_STEP_SUMMARY
+                echo "- **testcase**: Test class and method name" >> $GITHUB_STEP_SUMMARY
+                echo "- **failure**: Assertion that failed" >> $GITHUB_STEP_SUMMARY
+                echo "- **stacktrace**: Full error stack trace" >> $GITHUB_STEP_SUMMARY
+                echo "- **message**: Human-readable error message" >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+                echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
+                echo "- Check the test assertion logic" >> $GITHUB_STEP_SUMMARY
+                echo "- Verify UI elements exist and are accessible" >> $GITHUB_STEP_SUMMARY
+                echo "- Ensure proper test setup and teardown" >> $GITHUB_STEP_SUMMARY
+                echo "- Review activity lifecycle in tests" >> $GITHUB_STEP_SUMMARY
+                echo "- If intentional error (like testIntentionalError), remove the test" >> $GITHUB_STEP_SUMMARY
                 echo "" >> $GITHUB_STEP_SUMMARY
               fi
             done
@@ -316,6 +374,21 @@ jobs:
                 echo '```xml' >> $GITHUB_STEP_SUMMARY
                 cat "$file" >> $GITHUB_STEP_SUMMARY
                 echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+                
+                echo "#### 📝 Error Explanation" >> $GITHUB_STEP_SUMMARY
+                echo "UI tests verify app UI components and interactions. Key information:" >> $GITHUB_STEP_SUMMARY
+                echo "- **testcase**: Test class and method name" >> $GITHUB_STEP_SUMMARY
+                echo "- **failure**: UI assertion that failed" >> $GITHUB_STEP_SUMMARY
+                echo "- **stacktrace**: Full error stack trace" >> $GITHUB_STEP_SUMMARY
+                echo "- **message**: Human-readable error message" >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+                echo "#### 💡 Fix Suggestions" >> $GITHUB_STEP_SUMMARY
+                echo "- Check if UI elements exist in the layout" >> $GITHUB_STEP_SUMMARY
+                echo "- Verify element IDs match test expectations" >> $GITHUB_STEP_SUMMARY
+                echo "- Ensure proper Espresso view interactions" >> $GITHUB_STEP_SUMMARY
+                echo "- Check activity/view state during test" >> $GITHUB_STEP_SUMMARY
+                echo "- If intentional error (like testIntentionalError), remove the test" >> $GITHUB_STEP_SUMMARY
                 echo "" >> $GITHUB_STEP_SUMMARY
               fi
             done
