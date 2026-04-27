@@ -4,87 +4,178 @@ import org.junit.Test
 import org.junit.Assert.*
 
 /**
- * Unit tests for FlavorConfig
+ * Function-wise unit tests for FlavorConfig
  * Note: These tests will run against the flavor-specific implementation
  * based on which build variant is being tested
  */
 class FlavorConfigTest {
 
+    // ========== getFlavorName() Tests ==========
+    
     @Test
-    fun testGetFlavorNameReturnsNonEmptyString() {
+    fun testGetFlavorName_FunctionExists() {
         val flavorName = FlavorConfig.getFlavorName()
-        assertNotNull("Flavor name should not be null", flavorName)
-        assertTrue("Flavor name should not be empty", flavorName.isNotEmpty())
+        assertNotNull("getFlavorName() should return a value", flavorName)
     }
 
     @Test
-    fun testGetFlavorNameIsValid() {
+    fun testGetFlavorName_ReturnsNonEmptyString() {
+        val flavorName = FlavorConfig.getFlavorName()
+        assertTrue("getFlavorName() should return non-empty string", flavorName.isNotEmpty())
+    }
+
+    @Test
+    fun testGetFlavorName_ReturnsValidFlavorName() {
         val flavorName = FlavorConfig.getFlavorName()
         val validNames = listOf("Development", "Staging", "Production")
-        assertTrue("Flavor name should be one of the valid names", 
+        assertTrue("getFlavorName() should return valid flavor name", 
             flavorName in validNames)
     }
 
     @Test
-    fun testGetApiTimeoutReturnsPositiveValue() {
-        val timeout = FlavorConfig.getApiTimeout()
-        assertTrue("API timeout should be positive", timeout > 0)
+    fun testGetFlavorName_StartsWithUppercase() {
+        val flavorName = FlavorConfig.getFlavorName()
+        assertTrue("getFlavorName() should start with uppercase letter", 
+            flavorName[0].isUpperCase())
     }
 
     @Test
-    fun testGetApiTimeoutIsInReasonableRange() {
+    fun testGetFlavorName_NoSpaces() {
+        val flavorName = FlavorConfig.getFlavorName()
+        assertFalse("getFlavorName() should not contain spaces", 
+            flavorName.contains(" "))
+    }
+
+    // ========== getApiTimeout() Tests ==========
+
+    @Test
+    fun testGetApiTimeout_FunctionExists() {
         val timeout = FlavorConfig.getApiTimeout()
-        
-        // API timeout should be between 5 seconds and 1 minute
-        assertTrue("API timeout should be at least 5 seconds", timeout >= 5000)
-        assertTrue("API timeout should not exceed 1 minute", timeout <= 60000)
+        assertNotNull("getApiTimeout() should return a value", timeout)
     }
 
     @Test
-    fun testIsDebugEnabledReturnsBoolean() {
+    fun testGetApiTimeout_ReturnsPositiveValue() {
+        val timeout = FlavorConfig.getApiTimeout()
+        assertTrue("getApiTimeout() should return positive value", timeout > 0)
+    }
+
+    @Test
+    fun testGetApiTimeout_MinimumFiveSeconds() {
+        val timeout = FlavorConfig.getApiTimeout()
+        assertTrue("getApiTimeout() should be at least 5 seconds (5000ms)", timeout >= 5000)
+    }
+
+    @Test
+    fun testGetApiTimeout_MaximumOneMinute() {
+        val timeout = FlavorConfig.getApiTimeout()
+        assertTrue("getApiTimeout() should not exceed 1 minute (60000ms)", timeout <= 60000)
+    }
+
+    @Test
+    fun testGetApiTimeout_ReturnsLongType() {
+        val timeout = FlavorConfig.getApiTimeout()
+        assertTrue("getApiTimeout() should return Long type", timeout is Long)
+    }
+
+    // ========== isDebugEnabled() Tests ==========
+
+    @Test
+    fun testIsDebugEnabled_FunctionExists() {
         val debugEnabled = FlavorConfig.isDebugEnabled()
-        assertNotNull("Debug enabled should return a boolean", debugEnabled)
+        assertNotNull("isDebugEnabled() should return a value", debugEnabled)
     }
 
     @Test
-    fun testGetLogLevelReturnsNonEmptyString() {
-        val logLevel = FlavorConfig.getLogLevel()
-        assertNotNull("Log level should not be null", logLevel)
-        assertTrue("Log level should not be empty", logLevel.isNotEmpty())
+    fun testIsDebugEnabled_ReturnsBoolean() {
+        val debugEnabled = FlavorConfig.isDebugEnabled()
+        assertTrue("isDebugEnabled() should return Boolean type", debugEnabled is Boolean)
     }
 
     @Test
-    fun testGetLogLevelIsValid() {
-        val logLevel = FlavorConfig.getLogLevel()
-        val validLogLevels = listOf("VERBOSE", "DEBUG", "INFO", "WARN", "ERROR")
-        assertTrue("Log level should be one of the valid levels", 
-            logLevel in validLogLevels)
-    }
-
-    @Test
-    fun testDebugConfigurationConsistency() {
+    fun testIsDebugEnabled_ConsistentWithLogLevel() {
         val debugEnabled = FlavorConfig.isDebugEnabled()
         val logLevel = FlavorConfig.getLogLevel()
         
         if (debugEnabled) {
-            // If debug is enabled, log level should be VERBOSE or DEBUG
-            assertTrue("Debug enabled should have verbose or debug log level", 
+            assertTrue("When debug enabled, log level should be VERBOSE or DEBUG", 
                 logLevel in listOf("VERBOSE", "DEBUG"))
         } else {
-            // If debug is disabled, log level should be INFO, WARN, or ERROR
-            assertTrue("Debug disabled should have info, warn, or error log level", 
+            assertTrue("When debug disabled, log level should be INFO, WARN, or ERROR", 
                 logLevel in listOf("INFO", "WARN", "ERROR"))
         }
     }
 
+    // ========== getLogLevel() Tests ==========
+
     @Test
-    fun testFlavorNameMatchesExpectedPattern() {
+    fun testGetLogLevel_FunctionExists() {
+        val logLevel = FlavorConfig.getLogLevel()
+        assertNotNull("getLogLevel() should return a value", logLevel)
+    }
+
+    @Test
+    fun testGetLogLevel_ReturnsNonEmptyString() {
+        val logLevel = FlavorConfig.getLogLevel()
+        assertTrue("getLogLevel() should return non-empty string", logLevel.isNotEmpty())
+    }
+
+    @Test
+    fun testGetLogLevel_ReturnsValidLogLevel() {
+        val logLevel = FlavorConfig.getLogLevel()
+        val validLogLevels = listOf("VERBOSE", "DEBUG", "INFO", "WARN", "ERROR")
+        assertTrue("getLogLevel() should return valid log level", 
+            logLevel in validLogLevels)
+    }
+
+    @Test
+    fun testGetLogLevel_AllUppercase() {
+        val logLevel = FlavorConfig.getLogLevel()
+        assertEquals("getLogLevel() should return uppercase string", 
+            logLevel, logLevel.uppercase())
+    }
+
+    // ========== Cross-Function Consistency Tests ==========
+
+    @Test
+    fun testAllFunctionsReturnConsistentConfiguration() {
+        val flavorName = FlavorConfig.getFlavorName()
+        val apiTimeout = FlavorConfig.getApiTimeout()
+        val debugEnabled = FlavorConfig.isDebugEnabled()
+        val logLevel = FlavorConfig.getLogLevel()
+
+        // All values should be non-null
+        assertNotNull("Flavor name should not be null", flavorName)
+        assertNotNull("API timeout should not be null", apiTimeout)
+        assertNotNull("Debug enabled should not be null", debugEnabled)
+        assertNotNull("Log level should not be null", logLevel)
+
+        // All values should be valid
+        assertTrue("Flavor name should be valid", flavorName in listOf("Development", "Staging", "Production"))
+        assertTrue("API timeout should be positive", apiTimeout > 0)
+        assertTrue("Log level should be valid", logLevel in listOf("VERBOSE", "DEBUG", "INFO", "WARN", "ERROR"))
+    }
+
+    @Test
+    fun testFlavorSpecificConfiguration() {
         val flavorName = FlavorConfig.getFlavorName()
         
-        // Flavor name should be a single word with first letter capitalized
-        assertTrue("Flavor name should start with uppercase letter", 
-            flavorName[0].isUpperCase())
-        assertTrue("Flavor name should not contain spaces", 
-            !flavorName.contains(" "))
+        when (flavorName) {
+            "Development" -> {
+                assertEquals("Dev should have 30s timeout", 30000L, FlavorConfig.getApiTimeout())
+                assertTrue("Dev should have debug enabled", FlavorConfig.isDebugEnabled())
+                assertEquals("Dev should have VERBOSE log level", "VERBOSE", FlavorConfig.getLogLevel())
+            }
+            "Staging" -> {
+                assertEquals("Staging should have 15s timeout", 15000L, FlavorConfig.getApiTimeout())
+                assertTrue("Staging should have debug enabled", FlavorConfig.isDebugEnabled())
+                assertEquals("Staging should have DEBUG log level", "DEBUG", FlavorConfig.getLogLevel())
+            }
+            "Production" -> {
+                assertEquals("Prod should have 10s timeout", 10000L, FlavorConfig.getApiTimeout())
+                assertFalse("Prod should not have debug enabled", FlavorConfig.isDebugEnabled())
+                assertEquals("Prod should have ERROR log level", "ERROR", FlavorConfig.getLogLevel())
+            }
+        }
     }
 }
