@@ -19,6 +19,7 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.ext.flavourbasedbuildtest", appContext.packageName)
+        // Package name includes flavor suffix (e.g., .dev, .staging, .prod)
+        assertTrue("Package name should start with base package name", appContext.packageName.startsWith("com.ext.flavourbasedbuildtest"))
     }
 }
