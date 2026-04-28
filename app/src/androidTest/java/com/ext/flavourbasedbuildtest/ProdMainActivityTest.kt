@@ -7,6 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assume
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith
 /**
  * Prod Flavor UI Tests for MainActivity
  * Comprehensive test coverage for all Prod flavor features
+ * These tests only run for the prod flavor
  */
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -23,6 +25,9 @@ class ProdMainActivityTest {
 
     @Test
     fun testProdMainActivityLaunches() {
+        // Skip if not prod flavor
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             assertNotNull("Prod MainActivity should not be null", activity)
             assertTrue("Activity should be Prod MainActivity", activity is MainActivity)
@@ -31,6 +36,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testAllLayoutComponentsExist() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             // Buttons
             assertNotNull("View details button should exist", activity.binding.viewDetailsButton)
@@ -48,6 +55,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testViewDetailsButtonClick() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             val button = activity.binding.viewDetailsButton
             assertNotNull("View details button should exist", button)
@@ -58,6 +67,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testSettingsButtonClick() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             val button = activity.binding.settingsButton
             assertNotNull("Settings button should exist", button)
@@ -68,6 +79,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testMetricsDisplay() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             val activeUsersText = activity.binding.activeUsersText
             val revenueText = activity.binding.revenueText
@@ -83,6 +96,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testSystemHealthMetrics() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             val uptimeText = activity.binding.uptimeText
             val responseTimeText = activity.binding.responseTimeText
@@ -96,6 +111,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testSharedPreferencesPersistence() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             val prefs = activity.getSharedPreferences("ProdPrefs", android.content.Context.MODE_PRIVATE)
             
@@ -115,6 +132,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testRealTimeMetricsUpdate() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             val activeUsersText = activity.binding.activeUsersText
             val revenueText = activity.binding.revenueText
@@ -129,6 +148,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testUserFlow_ViewDetails() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             // Step 1: Click view details button
             val button = activity.binding.viewDetailsButton
@@ -139,6 +160,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testUserFlow_OpenSettings() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             // Step 1: Click settings button
             val button = activity.binding.settingsButton
@@ -151,6 +174,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testUserFlow_ChangeSettings() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         activityRule.scenario.onActivity { activity ->
             // Step 1: Open settings
             val settingsButton = activity.binding.settingsButton
@@ -170,6 +195,8 @@ class ProdMainActivityTest {
 
     @Test
     fun testProdCrashTrigger() {
+        Assume.assumeTrue("This test only runs for prod flavor", BuildConfig.FLAVOR == "prod")
+        
         // This test will trigger the crash by clicking the view details button
         activityRule.scenario.onActivity { activity ->
             activity.binding.viewDetailsButton.performClick()

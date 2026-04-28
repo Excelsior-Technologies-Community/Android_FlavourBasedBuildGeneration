@@ -7,6 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assume
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith
 /**
  * Dev Flavor UI Tests for MainActivity
  * Comprehensive test coverage for all Dev flavor features
+ * These tests only run for the dev flavor
  */
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -23,6 +25,9 @@ class DevMainActivityTest {
 
     @Test
     fun testDevMainActivityLaunches() {
+        // Skip if not dev flavor
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             assertNotNull("Dev MainActivity should not be null", activity)
             assertTrue("Activity should be Dev MainActivity", activity is MainActivity)
@@ -31,6 +36,8 @@ class DevMainActivityTest {
 
     @Test
     fun testAllLayoutComponentsExist() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             // Switches
             assertNotNull("Verbose logs switch should exist", activity.binding.verboseLogsSwitch)
@@ -47,6 +54,8 @@ class DevMainActivityTest {
 
     @Test
     fun testVerboseLogsSwitchFunctionality() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             val switch = activity.binding.verboseLogsSwitch
             val initialState = switch.isChecked
@@ -58,6 +67,8 @@ class DevMainActivityTest {
 
     @Test
     fun testNetworkInspectorSwitchFunctionality() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             val switch = activity.binding.networkInspectorSwitch
             val initialState = switch.isChecked
@@ -73,6 +84,8 @@ class DevMainActivityTest {
 
     @Test
     fun testTestApiButtonClick() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             val button = activity.binding.testApiButton
             val connectionStatus = activity.binding.connectionStatus
@@ -88,6 +101,8 @@ class DevMainActivityTest {
 
     @Test
     fun testClearCacheButtonClick() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             val button = activity.binding.clearCacheButton
             val memoryText = activity.binding.memoryUsageText
@@ -101,6 +116,8 @@ class DevMainActivityTest {
 
     @Test
     fun testSharedPreferencesPersistence() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             val prefs = activity.getSharedPreferences("DevPrefs", android.content.Context.MODE_PRIVATE)
             
@@ -116,6 +133,8 @@ class DevMainActivityTest {
 
     @Test
     fun testMemoryUsageDisplay() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             val memoryText = activity.binding.memoryUsageText
             assertNotNull("Memory usage text should exist", memoryText)
@@ -127,6 +146,8 @@ class DevMainActivityTest {
 
     @Test
     fun testConnectionStatusDisplay() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             val connectionStatus = activity.binding.connectionStatus
             assertNotNull("Connection status should exist", connectionStatus)
@@ -136,6 +157,8 @@ class DevMainActivityTest {
 
     @Test
     fun testResponseTimeDisplay() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             val responseTimeText = activity.binding.responseTimeText
             assertNotNull("Response time text should exist", responseTimeText)
@@ -144,6 +167,8 @@ class DevMainActivityTest {
 
     @Test
     fun testUserFlow_EnableVerboseLogs() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             // Step 1: Enable verbose logs
             val switch = activity.binding.verboseLogsSwitch
@@ -155,6 +180,8 @@ class DevMainActivityTest {
 
     @Test
     fun testUserFlow_TestApiConnection() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             // Step 1: Click test API button
             val button = activity.binding.testApiButton
@@ -171,6 +198,8 @@ class DevMainActivityTest {
 
     @Test
     fun testUserFlow_ClearCache() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         activityRule.scenario.onActivity { activity ->
             // Step 1: Click clear cache button
             val button = activity.binding.clearCacheButton
@@ -185,6 +214,8 @@ class DevMainActivityTest {
 
     @Test
     fun testDevCrashTrigger() {
+        Assume.assumeTrue("This test only runs for dev flavor", BuildConfig.FLAVOR == "dev")
+        
         // This test will trigger the crash by clicking the verbose logs switch
         activityRule.scenario.onActivity { activity ->
             activity.binding.verboseLogsSwitch.performClick()

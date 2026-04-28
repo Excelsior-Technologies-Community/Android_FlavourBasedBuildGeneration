@@ -64,6 +64,7 @@ android {
     productFlavors {
         create("dev") {
             dimension = "environment"
+            buildConfigField("String", "FLAVOR", "\"dev\"")
             buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"")
             buildConfigField("String", "AUTH_KEY", "\"dev_auth_key_xyz123\"")
             buildConfigField("boolean", "ENABLE_DEBUG_FEATURES", "true")
@@ -79,6 +80,7 @@ android {
         }
         create("staging") {
             dimension = "environment"
+            buildConfigField("String", "FLAVOR", "\"staging\"")
             buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"")
             buildConfigField("String", "AUTH_KEY", "\"staging_auth_key_abc456\"")
             buildConfigField("boolean", "ENABLE_DEBUG_FEATURES", "true")
@@ -94,6 +96,7 @@ android {
         }
         create("prod") {
             dimension = "environment"
+            buildConfigField("String", "FLAVOR", "\"prod\"")
             buildConfigField("String", "BASE_URL", "\"https://api.example.com/\"")
             buildConfigField("String", "AUTH_KEY", "\"prod_auth_key_def789\"")
             buildConfigField("boolean", "ENABLE_DEBUG_FEATURES", "false")

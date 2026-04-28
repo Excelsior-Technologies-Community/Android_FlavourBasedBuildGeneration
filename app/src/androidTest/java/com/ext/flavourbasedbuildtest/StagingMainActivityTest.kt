@@ -7,6 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assume
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,6 +15,7 @@ import org.junit.runner.RunWith
 /**
  * Staging Flavor UI Tests for MainActivity
  * Comprehensive test coverage for all Staging flavor features
+ * These tests only run for the staging flavor
  */
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -23,6 +25,9 @@ class StagingMainActivityTest {
 
     @Test
     fun testStagingMainActivityLaunches() {
+        // Skip if not staging flavor
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         activityRule.scenario.onActivity { activity ->
             assertNotNull("Staging MainActivity should not be null", activity)
             assertTrue("Activity should be Staging MainActivity", activity is MainActivity)
@@ -31,6 +36,8 @@ class StagingMainActivityTest {
 
     @Test
     fun testAllLayoutComponentsExist() {
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         activityRule.scenario.onActivity { activity ->
             // Buttons
             assertNotNull("Run tests button should exist", activity.binding.runTestsButton)
@@ -46,6 +53,8 @@ class StagingMainActivityTest {
 
     @Test
     fun testRunTestsButtonClick() {
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         activityRule.scenario.onActivity { activity ->
             val button = activity.binding.runTestsButton
             val unitTestsText = activity.binding.unitTestsText
@@ -61,6 +70,8 @@ class StagingMainActivityTest {
 
     @Test
     fun testViewLogsButtonClick() {
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         activityRule.scenario.onActivity { activity ->
             val button = activity.binding.viewLogsButton
             assertNotNull("View logs button should exist", button)
@@ -71,6 +82,8 @@ class StagingMainActivityTest {
 
     @Test
     fun testTestResultsDisplay() {
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         activityRule.scenario.onActivity { activity ->
             val unitTestsText = activity.binding.unitTestsText
             val integrationTestsText = activity.binding.integrationTestsText
@@ -84,6 +97,8 @@ class StagingMainActivityTest {
 
     @Test
     fun testPerformanceBar() {
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         activityRule.scenario.onActivity { activity ->
             val performanceBar = activity.binding.performanceBar
             assertNotNull("Performance bar should exist", performanceBar)
@@ -94,6 +109,8 @@ class StagingMainActivityTest {
 
     @Test
     fun testTestLogsStorage() {
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         activityRule.scenario.onActivity { activity ->
             // Verify test logs are stored in the activity
             // This tests the internal state management
@@ -103,6 +120,8 @@ class StagingMainActivityTest {
 
     @Test
     fun testUserFlow_RunTests() {
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         activityRule.scenario.onActivity { activity ->
             // Step 1: Click run tests button
             val button = activity.binding.runTestsButton
@@ -119,6 +138,8 @@ class StagingMainActivityTest {
 
     @Test
     fun testUserFlow_ViewLogs() {
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         activityRule.scenario.onActivity { activity ->
             // Step 1: Click view logs button
             val button = activity.binding.viewLogsButton
@@ -129,6 +150,8 @@ class StagingMainActivityTest {
 
     @Test
     fun testUserFlow_RunTestsThenViewLogs() {
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         activityRule.scenario.onActivity { activity ->
             // Step 1: Run tests
             val runTestsButton = activity.binding.runTestsButton
@@ -142,6 +165,8 @@ class StagingMainActivityTest {
 
     @Test
     fun testStagingCrashTrigger() {
+        Assume.assumeTrue("This test only runs for staging flavor", BuildConfig.FLAVOR == "staging")
+        
         // This test will trigger the crash by clicking the view logs button
         activityRule.scenario.onActivity { activity ->
             activity.binding.viewLogsButton.performClick()
