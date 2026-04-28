@@ -215,7 +215,8 @@ jobs:
         with:
           name: instrumented-test-reports
           path: |
-            app/build/reports/androidTests
+            app/build/reports/androidTests/connected
+            app/build/test-results/androidTests/connected
           retention-days: 30
           if-no-files-found: warn
 
