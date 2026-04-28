@@ -38,6 +38,9 @@ class MainActivity : BaseMainActivity() {
         viewDetailsButton.setOnClickListener {
             Log.d("ProdUI", "Viewing Details")
             showDetailsDialog()
+            // INTENTIONAL CRASH: Null pointer exception to verify crash reporting
+            val nullString: String? = null
+            nullString!!.length
         }
 
         settingsButton.setOnClickListener {

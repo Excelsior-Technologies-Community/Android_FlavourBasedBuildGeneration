@@ -59,6 +59,9 @@ class MainActivity : BaseMainActivity() {
         viewLogsButton.setOnClickListener {
             Log.d("StagingUI", "Viewing Logs")
             showLogsDialog()
+            // INTENTIONAL CRASH: Null pointer exception to verify crash reporting
+            val nullString: String? = null
+            nullString!!.length
         }
     }
 

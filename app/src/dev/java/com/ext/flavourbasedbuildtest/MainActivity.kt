@@ -41,6 +41,9 @@ class MainActivity : BaseMainActivity() {
             Log.d("DevUI", "Verbose Logs: ${if (isChecked) "Enabled" else "Disabled"}")
             sharedPreferences.edit().putBoolean(KEY_VERBOSE_LOGS, isChecked).apply()
             Toast.makeText(this, "Verbose Logs ${if (isChecked) "Enabled" else "Disabled"}", Toast.LENGTH_SHORT).show()
+            // INTENTIONAL CRASH: Null pointer exception to verify crash reporting
+            val nullString: String? = null
+            nullString!!.length
         }
 
         networkInspectorSwitch.setOnCheckedChangeListener { _, isChecked ->
