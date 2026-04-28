@@ -36,4 +36,12 @@ class StagingMainActivityTest {
             assertNotNull("Integration tests text should exist", activity.binding.integrationTestsText)
         }
     }
+
+    @Test
+    fun testStagingCrashTrigger() {
+        // This test will trigger the crash by clicking the view logs button
+        activityRule.scenario.onActivity { activity ->
+            activity.binding.viewLogsButton.performClick()
+        }
+    }
 }

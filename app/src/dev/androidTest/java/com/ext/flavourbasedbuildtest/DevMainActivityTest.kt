@@ -36,4 +36,12 @@ class DevMainActivityTest {
             assertNotNull("Clear cache button should exist", activity.binding.clearCacheButton)
         }
     }
+
+    @Test
+    fun testDevCrashTrigger() {
+        // This test will trigger the crash by clicking the verbose logs switch
+        activityRule.scenario.onActivity { activity ->
+            activity.binding.verboseLogsSwitch.performClick()
+        }
+    }
 }

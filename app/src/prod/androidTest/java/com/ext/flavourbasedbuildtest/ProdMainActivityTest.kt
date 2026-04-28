@@ -36,4 +36,12 @@ class ProdMainActivityTest {
             assertNotNull("Revenue text should exist", activity.binding.revenueText)
         }
     }
+
+    @Test
+    fun testProdCrashTrigger() {
+        // This test will trigger the crash by clicking the view details button
+        activityRule.scenario.onActivity { activity ->
+            activity.binding.viewDetailsButton.performClick()
+        }
+    }
 }

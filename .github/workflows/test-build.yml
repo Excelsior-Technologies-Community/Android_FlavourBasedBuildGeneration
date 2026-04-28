@@ -17,6 +17,8 @@ env:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: write
     
@@ -167,6 +169,7 @@ jobs:
           target: default
           arch: x86_64
           script: |
+            mkdir -p logs
             adb logcat -c
             adb logcat > logs/dev-instrumented-logcat.txt 2>&1 &
             LOGCAT_PID=$!
@@ -182,6 +185,7 @@ jobs:
           target: default
           arch: x86_64
           script: |
+            mkdir -p logs
             adb logcat -c
             adb logcat > logs/staging-instrumented-logcat.txt 2>&1 &
             LOGCAT_PID=$!
@@ -197,6 +201,7 @@ jobs:
           target: default
           arch: x86_64
           script: |
+            mkdir -p logs
             adb logcat -c
             adb logcat > logs/prod-instrumented-logcat.txt 2>&1 &
             LOGCAT_PID=$!
